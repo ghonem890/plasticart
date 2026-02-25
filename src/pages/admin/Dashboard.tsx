@@ -1,0 +1,259 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { Layout } from "@/components/Layout";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { Users, Package, ShoppingCart, DollarSign, CheckCircle, XCircle, Shield } from "lucide-react";
+
+export default function AdminDashboard() {
+  const { t, language } = useLanguage();
+  const { user, hasRole } = useAuth();
+  const { toast } = useToast();
+  const [sellers, setSellers] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [coupons, setCoupons] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // New category form
+  const [newCatEn, setNewCatEn] = useState("");
+  const [newCatAr, setNewCatAr] = useState("");
+  const [newCatSlug, setNewCatSlug] = useState("");
+  
+  // New coupon form
+  const [newCoupon, setNewCoupon] = useState({ code: "", discountType: "percentage" as "percentage" | "fixed", discountAmount: "", maxUses: "", minOrderAmount: "" });
+
+  useEffect(() => {
+    if (!user || !hasRole("admin")) return;
+    const fetch = async () => {
+      const [sRes, pRes, oRes, cRes, cpRes] = await Promise.all([
+        supabase.from("seller_profiles").select("*, profiles:user_id(display_name, phone)"),
+        supabase.from("products").select("*, seller_profiles:seller_id(business_name)").order("created_at", { ascending: false }).limit(50),
+        supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(50),
+        supabase.from("categories").select("*").order("sort_order"),
+        supabase.from("coupons").select("*").order("created_at", { ascending: false }),
+      ]);
+      setSellers(sRes.data || []);
+      setProducts(pRes.data || []);
+      setOrders(oRes.data || []);
+      setCategories(cRes.data || []);
+      setCoupons(cpRes.data || []);
+      setLoading(false);
+    };
+    fetch();
+  }, [user]);
+
+  if (!hasRole("admin")) {
+    return <Layout><div className="container py-16 text-center"><Shield className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-30" /><p>Access denied</p></div></Layout>;
+  }
+
+  const pendingSellers = sellers.filter((s) => s.verification_status === "pending");
+  const totalRevenue = orders.filter((o) => o.status === "completed").reduce((s, o) => s + Number(o.total), 0);
+
+  const updateSellerStatus = async (sellerId: string, status: "approved" | "rejected") => {
+    await supabase.from("seller_profiles").update({ verification_status: status }).eq("id", sellerId);
+    setSellers((prev) => prev.map((s) => s.id === sellerId ? { ...s, verification_status: status } : s));
+    toast({ title: `Seller ${status}` });
+  };
+
+  const updateOrderStatus = async (orderId: string, status: "pending" | "confirmed" | "shipped" | "completed" | "returned" | "refunded" | "cancelled") => {
+    await supabase.from("orders").update({ status }).eq("id", orderId);
+    setOrders((prev) => prev.map((o) => o.id === orderId ? { ...o, status } : o));
+  };
+
+  const addCategory = async () => {
+    if (!newCatEn || !newCatAr || !newCatSlug) return;
+    const { data, error } = await supabase.from("categories").insert({ name_en: newCatEn, name_ar: newCatAr, slug: newCatSlug, sort_order: categories.length }).select().single();
+    if (error) { toast({ title: error.message, variant: "destructive" }); return; }
+    setCategories([...categories, data]);
+    setNewCatEn(""); setNewCatAr(""); setNewCatSlug("");
+    toast({ title: "Category added" });
+  };
+
+  const deleteCategory = async (catId: string) => {
+    await supabase.from("categories").delete().eq("id", catId);
+    setCategories((prev) => prev.filter((c) => c.id !== catId));
+  };
+
+  const addCoupon = async () => {
+    if (!newCoupon.code || !newCoupon.discountAmount) return;
+    const { data, error } = await supabase.from("coupons").insert({
+      code: newCoupon.code.toUpperCase(),
+      discount_type: newCoupon.discountType,
+      discount_amount: parseFloat(newCoupon.discountAmount),
+      max_uses: newCoupon.maxUses ? parseInt(newCoupon.maxUses) : null,
+      min_order_amount: newCoupon.minOrderAmount ? parseFloat(newCoupon.minOrderAmount) : 0,
+    }).select().single();
+    if (error) { toast({ title: error.message, variant: "destructive" }); return; }
+    setCoupons([data, ...coupons]);
+    setNewCoupon({ code: "", discountType: "percentage", discountAmount: "", maxUses: "", minOrderAmount: "" });
+    toast({ title: "Coupon created" });
+  };
+
+  const toggleCoupon = async (couponId: string, isActive: boolean) => {
+    await supabase.from("coupons").update({ is_active: !isActive }).eq("id", couponId);
+    setCoupons((prev) => prev.map((c) => c.id === couponId ? { ...c, is_active: !isActive } : c));
+  };
+
+  if (loading) return <Layout><div className="container py-16 text-center text-muted-foreground">{t("loading")}</div></Layout>;
+
+  return (
+    <Layout>
+      <div className="container py-8">
+        <h1 className="text-2xl font-bold mb-6">{t("adminDashboard")}</h1>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <Card><CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center"><Users className="h-5 w-5 text-primary" /></div>
+            <div><p className="text-2xl font-bold">{sellers.length}</p><p className="text-xs text-muted-foreground">{t("totalUsers")}</p></div>
+          </CardContent></Card>
+          <Card><CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center"><Package className="h-5 w-5 text-primary" /></div>
+            <div><p className="text-2xl font-bold">{products.length}</p><p className="text-xs text-muted-foreground">{t("totalProducts")}</p></div>
+          </CardContent></Card>
+          <Card><CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center"><ShoppingCart className="h-5 w-5 text-primary" /></div>
+            <div><p className="text-2xl font-bold">{orders.length}</p><p className="text-xs text-muted-foreground">{t("totalOrders")}</p></div>
+          </CardContent></Card>
+          <Card><CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center"><DollarSign className="h-5 w-5 text-primary" /></div>
+            <div><p className="text-2xl font-bold">{totalRevenue.toLocaleString()}</p><p className="text-xs text-muted-foreground">{t("totalRevenue")}</p></div>
+          </CardContent></Card>
+        </div>
+
+        <Tabs defaultValue="sellers">
+          <TabsList className="mb-4">
+            <TabsTrigger value="sellers">{t("sellerVerification")} {pendingSellers.length > 0 && `(${pendingSellers.length})`}</TabsTrigger>
+            <TabsTrigger value="orders">{t("orders")}</TabsTrigger>
+            <TabsTrigger value="categories">{t("categories")}</TabsTrigger>
+            <TabsTrigger value="coupons">{t("couponManagement")}</TabsTrigger>
+          </TabsList>
+
+          {/* Sellers */}
+          <TabsContent value="sellers" className="space-y-4">
+            {sellers.map((s) => (
+              <Card key={s.id}>
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">{s.business_name}</p>
+                    <p className="text-sm text-muted-foreground">{s.profiles?.display_name} · {s.profiles?.phone}</p>
+                    <div className="flex gap-2 mt-1">
+                      {s.contract_document_url && <Badge variant="outline">Contract ✓</Badge>}
+                      {s.id_photo_url && <Badge variant="outline">ID ✓</Badge>}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={s.verification_status === "approved" ? "default" : s.verification_status === "rejected" ? "destructive" : "secondary"}>
+                      {s.verification_status}
+                    </Badge>
+                    {s.verification_status === "pending" && (
+                      <>
+                        <Button size="sm" onClick={() => updateSellerStatus(s.id, "approved")}>
+                          <CheckCircle className="h-4 w-4 me-1" />{t("approve")}
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => updateSellerStatus(s.id, "rejected")}>
+                          <XCircle className="h-4 w-4 me-1" />{t("reject")}
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+
+          {/* Orders */}
+          <TabsContent value="orders" className="space-y-4">
+            {orders.map((o) => (
+              <Card key={o.id}>
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div>
+                    <span className="font-mono text-sm">#{o.id.slice(0, 8)}</span>
+                    <span className="ms-2 text-sm text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</span>
+                    <p className="text-sm font-semibold mt-1">{o.total.toLocaleString()} {t("currencySymbol")}</p>
+                  </div>
+                  <Select value={o.status} onValueChange={(v: any) => updateOrderStatus(o.id, v)}>
+                    <SelectTrigger className="w-36 h-8"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {["pending", "confirmed", "shipped", "completed", "returned", "refunded", "cancelled"].map((s) => (
+                        <SelectItem key={s} value={s}>{s}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+
+          {/* Categories */}
+          <TabsContent value="categories" className="space-y-4">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex gap-2 items-end">
+                  <div className="flex-1 space-y-1"><Label>English</Label><Input value={newCatEn} onChange={(e) => setNewCatEn(e.target.value)} /></div>
+                  <div className="flex-1 space-y-1"><Label>Arabic</Label><Input value={newCatAr} onChange={(e) => setNewCatAr(e.target.value)} dir="rtl" /></div>
+                  <div className="flex-1 space-y-1"><Label>Slug</Label><Input value={newCatSlug} onChange={(e) => setNewCatSlug(e.target.value)} /></div>
+                  <Button onClick={addCategory}>Add</Button>
+                </div>
+              </CardContent>
+            </Card>
+            {categories.map((c) => (
+              <Card key={c.id}>
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div><p className="font-medium">{c.name_en}</p><p className="text-sm text-muted-foreground">{c.name_ar} · /{c.slug}</p></div>
+                  <Button variant="destructive" size="sm" onClick={() => deleteCategory(c.id)}>{t("delete")}</Button>
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+
+          {/* Coupons */}
+          <TabsContent value="coupons" className="space-y-4">
+            <Card>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-2 items-end">
+                  <div className="space-y-1"><Label>Code</Label><Input value={newCoupon.code} onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })} /></div>
+                  <div className="space-y-1"><Label>Type</Label>
+                    <Select value={newCoupon.discountType} onValueChange={(v: "percentage" | "fixed") => setNewCoupon({ ...newCoupon, discountType: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent><SelectItem value="percentage">%</SelectItem><SelectItem value="fixed">Fixed</SelectItem></SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1"><Label>Amount</Label><Input type="number" value={newCoupon.discountAmount} onChange={(e) => setNewCoupon({ ...newCoupon, discountAmount: e.target.value })} /></div>
+                  <div className="space-y-1"><Label>Max Uses</Label><Input type="number" value={newCoupon.maxUses} onChange={(e) => setNewCoupon({ ...newCoupon, maxUses: e.target.value })} /></div>
+                  <Button onClick={addCoupon}>Add</Button>
+                </div>
+              </CardContent>
+            </Card>
+            {coupons.map((c) => (
+              <Card key={c.id}>
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div>
+                    <p className="font-mono font-medium">{c.code}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {c.discount_type === "percentage" ? `${c.discount_amount}%` : `${c.discount_amount} EGP`}
+                      {c.max_uses && ` · ${c.used_count}/${c.max_uses} uses`}
+                    </p>
+                  </div>
+                  <Button variant={c.is_active ? "destructive" : "default"} size="sm" onClick={() => toggleCoupon(c.id, c.is_active)}>
+                    {c.is_active ? t("disable") : t("enable")}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </Layout>
+  );
+}
