@@ -552,6 +552,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_seller_order_ids: { Args: { _seller_id: string }; Returns: string[] }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
