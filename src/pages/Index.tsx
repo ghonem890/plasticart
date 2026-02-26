@@ -57,19 +57,19 @@ export default function Index() {
   return (
     <Layout>
       {/* Hero */}
-      <section className="relative overflow-hidden py-16 sm:py-24 bg-gradient-to-br from-primary/10 via-primary/5 to-info/10">
-        <div className="absolute top-10 -start-20 w-80 h-80 bg-primary/15 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 -end-20 w-80 h-80 bg-info/12 rounded-full blur-3xl" />
+      <section className="relative overflow-hidden py-16 sm:py-24 bg-primary text-primary-foreground">
+        <div className="absolute top-10 -start-20 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 -end-20 w-80 h-80 bg-white/8 rounded-full blur-3xl" />
         <div className="container text-center space-y-6 relative">
-          <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/15 mb-2">
+          <Badge className="bg-white/15 text-white border-white/20 hover:bg-white/20 mb-2">
             ✨ {t("brandName")}
           </Badge>
-          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-info bg-clip-text text-transparent">{t("heroTitle")}</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("heroSubtitle")}</p>
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">{t("heroTitle")}</h1>
+          <p className="text-lg text-white/75 max-w-2xl mx-auto">{t("heroSubtitle")}</p>
           <div className="max-w-xl mx-auto relative">
             <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
-              className="ps-10 h-12 text-base shadow-sm border-primary/20 focus-visible:ring-primary/30 bg-card"
+              className="ps-10 h-12 text-base shadow-sm bg-white text-foreground border-white/20"
               placeholder={t("search")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -80,40 +80,27 @@ export default function Index() {
       </section>
 
       {/* Categories */}
-      <section className="container py-12 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/3 to-transparent rounded-3xl -z-10" />
+      <section className="container py-12">
         <h2 className="text-2xl font-semibold mb-6">{t("categories")}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {categories.map((cat, i) => {
-            const colorClasses = [
-              "bg-primary/10 text-primary",
-              "bg-accent/10 text-accent",
-              "bg-highlight/10 text-highlight",
-              "bg-info/10 text-info",
-              "bg-warning/10 text-warning",
-              "bg-success/10 text-success",
-            ];
-            const colorClass = colorClasses[i % colorClasses.length];
-            return (
-              <Link key={cat.id} to={`/catalog?category=${cat.slug}`}>
-                <div className="flex flex-col items-center gap-2 p-4 rounded-xl border bg-card hover:shadow-md hover:border-primary/25 transition-all duration-200 hover:-translate-y-0.5">
-                  <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${colorClass}`}>
-                    {iconMap[cat.icon] || <Package className="h-6 w-6" />}
-                  </div>
-                  <span className="text-sm font-medium text-center">
-                    {language === "ar" ? cat.name_ar : cat.name_en}
-                  </span>
+          {categories.map((cat) => (
+            <Link key={cat.id} to={`/catalog?category=${cat.slug}`}>
+              <div className="flex flex-col items-center gap-2 p-4 rounded-xl border bg-card hover:shadow-md hover:border-primary/25 transition-all duration-200 hover:-translate-y-0.5">
+                <div className="h-12 w-12 rounded-xl flex items-center justify-center bg-primary/10 text-primary">
+                  {iconMap[cat.icon] || <Package className="h-6 w-6" />}
                 </div>
-              </Link>
-            );
-          })}
+                <span className="text-sm font-medium text-center">
+                  {language === "ar" ? cat.name_ar : cat.name_en}
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
       {/* Featured Products */}
-      <section className="relative pb-16">
-        <div className="absolute inset-0 bg-gradient-to-t from-primary/4 via-transparent to-transparent" />
-        <div className="container relative">
+      <section className="relative py-16 bg-primary/5">
+        <div className="container">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-semibold">{t("products")}</h2>
           <Link to="/catalog">
