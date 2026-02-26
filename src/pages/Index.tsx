@@ -57,7 +57,7 @@ export default function Index() {
   return (
     <Layout>
       {/* Hero */}
-      <section className="relative overflow-hidden py-16 sm:py-24 bg-primary text-primary-foreground">
+      <section className="relative overflow-hidden py-16 sm:py-24 bg-gradient-to-br from-primary via-primary/90 to-info">
         <div className="absolute top-10 -start-20 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
         <div className="absolute bottom-10 -end-20 w-80 h-80 bg-white/8 rounded-full blur-3xl" />
         <div className="container text-center space-y-6 relative">
