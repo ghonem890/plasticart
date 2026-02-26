@@ -57,19 +57,19 @@ export default function Index() {
   return (
     <Layout>
       {/* Hero */}
-      <section className="relative overflow-hidden py-16 sm:py-24 bg-gradient-to-br from-primary via-primary/90 to-info">
-        <div className="absolute top-10 -start-20 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 -end-20 w-80 h-80 bg-white/8 rounded-full blur-3xl" />
+      <section className="relative overflow-hidden py-16 sm:py-24 bg-gradient-to-br from-primary/15 via-primary/8 to-info/12 text-foreground">
+        <div className="absolute top-10 -start-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 -end-20 w-80 h-80 bg-info/8 rounded-full blur-3xl" />
         <div className="container text-center space-y-6 relative">
-          <Badge className="bg-white/15 text-white border-white/20 hover:bg-white/20 mb-2">
+          <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/15 mb-2">
             ✨ {t("brandName")}
           </Badge>
-          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white">{t("heroTitle")}</h1>
-          <p className="text-lg text-white/75 max-w-2xl mx-auto">{t("heroSubtitle")}</p>
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight">{t("heroTitle")}</h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("heroSubtitle")}</p>
           <div className="max-w-xl mx-auto relative">
             <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
-              className="ps-10 h-12 text-base shadow-sm bg-white text-foreground border-white/20"
+              className="ps-10 h-12 text-base shadow-sm border-primary/20 focus-visible:ring-primary/30 bg-card"
               placeholder={t("search")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
