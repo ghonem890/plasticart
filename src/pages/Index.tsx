@@ -57,19 +57,14 @@ export default function Index() {
   return (
     <Layout>
       {/* Hero */}
-      <section className="relative overflow-hidden py-16 sm:py-24 bg-gradient-to-br from-primary/15 via-primary/8 to-info/12 text-foreground">
-        <div className="absolute top-10 -start-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 -end-20 w-80 h-80 bg-info/8 rounded-full blur-3xl" />
-        <div className="container text-center space-y-6 relative">
-          <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/15 mb-2">
-            ✨ {t("brandName")}
-          </Badge>
+      <section className="bg-gradient-to-br from-primary/5 via-background to-accent/5 py-16 sm:py-24">
+        <div className="container text-center space-y-6">
           <h1 className="text-3xl sm:text-5xl font-bold tracking-tight">{t("heroTitle")}</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("heroSubtitle")}</p>
           <div className="max-w-xl mx-auto relative">
             <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
-              className="ps-10 h-12 text-base shadow-sm border-primary/20 focus-visible:ring-primary/30 bg-card"
+              className="ps-10 h-12 text-base"
               placeholder={t("search")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -85,8 +80,8 @@ export default function Index() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
           {categories.map((cat) => (
             <Link key={cat.id} to={`/catalog?category=${cat.slug}`}>
-              <div className="flex flex-col items-center gap-2 p-4 rounded-xl border bg-card hover:shadow-md hover:border-primary/25 transition-all duration-200 hover:-translate-y-0.5">
-                <div className="h-12 w-12 rounded-xl flex items-center justify-center bg-primary/10 text-primary">
+              <div className="flex flex-col items-center gap-2 p-4 rounded-xl border bg-card hover:bg-accent/10 hover:border-primary/20 transition-colors">
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                   {iconMap[cat.icon] || <Package className="h-6 w-6" />}
                 </div>
                 <span className="text-sm font-medium text-center">
@@ -99,12 +94,11 @@ export default function Index() {
       </section>
 
       {/* Featured Products */}
-      <section className="relative py-16 bg-primary/5">
-        <div className="container">
+      <section className="container pb-16">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-semibold">{t("products")}</h2>
           <Link to="/catalog">
-            <Button variant="outline" size="sm" className="border-primary/25 text-primary hover:bg-primary/5">{t("viewDetails")}</Button>
+            <Button variant="outline" size="sm">{t("viewDetails")}</Button>
           </Link>
         </div>
         {loading ? (
@@ -142,7 +136,6 @@ export default function Index() {
             ))}
           </div>
         )}
-        </div>
       </section>
     </Layout>
   );

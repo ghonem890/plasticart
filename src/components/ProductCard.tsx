@@ -76,7 +76,7 @@ export function ProductCard({
 
   return (
     <Link to={`/product/${id}`}>
-      <Card className="group overflow-hidden hover:shadow-lg hover:shadow-primary/5 transition-all duration-200 hover:-translate-y-0.5">
+      <Card className="group overflow-hidden hover:shadow-md transition-shadow">
         <div className="aspect-square bg-muted relative overflow-hidden">
           {imageUrl ? (
             <img src={imageUrl} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" loading="lazy" />
