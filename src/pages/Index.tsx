@@ -57,21 +57,19 @@ export default function Index() {
   return (
     <Layout>
       {/* Hero */}
-      <section className="relative overflow-hidden py-16 sm:py-24">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-highlight/5 to-accent/8" />
-        <div className="absolute top-10 -start-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 -end-20 w-72 h-72 bg-accent/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-highlight/5 rounded-full blur-3xl" />
+      <section className="relative overflow-hidden py-16 sm:py-24 bg-gradient-to-br from-primary/10 via-primary/5 to-info/10">
+        <div className="absolute top-10 -start-20 w-80 h-80 bg-primary/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 -end-20 w-80 h-80 bg-info/12 rounded-full blur-3xl" />
         <div className="container text-center space-y-6 relative">
-          <Badge className="bg-accent/15 text-accent border-accent/20 hover:bg-accent/20 mb-2">
+          <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/15 mb-2">
             ✨ {t("brandName")}
           </Badge>
-          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary via-highlight to-accent bg-clip-text text-transparent">{t("heroTitle")}</h1>
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary to-info bg-clip-text text-transparent">{t("heroTitle")}</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("heroSubtitle")}</p>
           <div className="max-w-xl mx-auto relative">
             <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
-              className="ps-10 h-12 text-base shadow-sm border-primary/20 focus-visible:ring-primary/30"
+              className="ps-10 h-12 text-base shadow-sm border-primary/20 focus-visible:ring-primary/30 bg-card"
               placeholder={t("search")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -82,7 +80,8 @@ export default function Index() {
       </section>
 
       {/* Categories */}
-      <section className="container py-12">
+      <section className="container py-12 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/3 to-transparent rounded-3xl -z-10" />
         <h2 className="text-2xl font-semibold mb-6">{t("categories")}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
           {categories.map((cat, i) => {
@@ -112,11 +111,13 @@ export default function Index() {
       </section>
 
       {/* Featured Products */}
-      <section className="container pb-16">
+      <section className="relative pb-16">
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/4 via-transparent to-transparent" />
+        <div className="container relative">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-semibold">{t("products")}</h2>
           <Link to="/catalog">
-            <Button variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/5">{t("viewDetails")}</Button>
+            <Button variant="outline" size="sm" className="border-primary/25 text-primary hover:bg-primary/5">{t("viewDetails")}</Button>
           </Link>
         </div>
         {loading ? (
@@ -154,6 +155,7 @@ export default function Index() {
             ))}
           </div>
         )}
+        </div>
       </section>
     </Layout>
   );
