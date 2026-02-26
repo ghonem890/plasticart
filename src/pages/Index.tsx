@@ -57,14 +57,21 @@ export default function Index() {
   return (
     <Layout>
       {/* Hero */}
-      <section className="bg-gradient-to-br from-primary/5 via-background to-accent/5 py-16 sm:py-24">
-        <div className="container text-center space-y-6">
-          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight">{t("heroTitle")}</h1>
+      <section className="relative overflow-hidden py-16 sm:py-24">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-highlight/5 to-accent/8" />
+        <div className="absolute top-10 -start-20 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 -end-20 w-72 h-72 bg-accent/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-highlight/5 rounded-full blur-3xl" />
+        <div className="container text-center space-y-6 relative">
+          <Badge className="bg-accent/15 text-accent border-accent/20 hover:bg-accent/20 mb-2">
+            ✨ {t("brandName")}
+          </Badge>
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight bg-gradient-to-r from-primary via-highlight to-accent bg-clip-text text-transparent">{t("heroTitle")}</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("heroSubtitle")}</p>
           <div className="max-w-xl mx-auto relative">
             <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
-              className="ps-10 h-12 text-base"
+              className="ps-10 h-12 text-base shadow-sm border-primary/20 focus-visible:ring-primary/30"
               placeholder={t("search")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -78,18 +85,29 @@ export default function Index() {
       <section className="container py-12">
         <h2 className="text-2xl font-semibold mb-6">{t("categories")}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {categories.map((cat) => (
-            <Link key={cat.id} to={`/catalog?category=${cat.slug}`}>
-              <div className="flex flex-col items-center gap-2 p-4 rounded-xl border bg-card hover:bg-accent/10 hover:border-primary/20 transition-colors">
-                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                  {iconMap[cat.icon] || <Package className="h-6 w-6" />}
+          {categories.map((cat, i) => {
+            const colorClasses = [
+              "bg-primary/10 text-primary",
+              "bg-accent/10 text-accent",
+              "bg-highlight/10 text-highlight",
+              "bg-info/10 text-info",
+              "bg-warning/10 text-warning",
+              "bg-success/10 text-success",
+            ];
+            const colorClass = colorClasses[i % colorClasses.length];
+            return (
+              <Link key={cat.id} to={`/catalog?category=${cat.slug}`}>
+                <div className="flex flex-col items-center gap-2 p-4 rounded-xl border bg-card hover:shadow-md hover:border-primary/25 transition-all duration-200 hover:-translate-y-0.5">
+                  <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${colorClass}`}>
+                    {iconMap[cat.icon] || <Package className="h-6 w-6" />}
+                  </div>
+                  <span className="text-sm font-medium text-center">
+                    {language === "ar" ? cat.name_ar : cat.name_en}
+                  </span>
                 </div>
-                <span className="text-sm font-medium text-center">
-                  {language === "ar" ? cat.name_ar : cat.name_en}
-                </span>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </section>
 
@@ -98,7 +116,7 @@ export default function Index() {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-semibold">{t("products")}</h2>
           <Link to="/catalog">
-            <Button variant="outline" size="sm">{t("viewDetails")}</Button>
+            <Button variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/5">{t("viewDetails")}</Button>
           </Link>
         </div>
         {loading ? (
