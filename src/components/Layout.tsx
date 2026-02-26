@@ -21,10 +21,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+      <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 shadow-sm">
         <div className="container flex h-14 items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2.5 shrink-0">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-highlight flex items-center justify-center shadow-sm">
               <Package className="h-4 w-4 text-primary-foreground" />
             </div>
             <span className="text-lg font-semibold tracking-tight hidden sm:inline">{t("brandName")}</span>
