@@ -11,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Package, ShoppingCart, DollarSign, CheckCircle, XCircle, Shield } from "lucide-react";
+import { Users, Package, ShoppingCart, DollarSign, CheckCircle, XCircle, Shield, Eye } from "lucide-react";
+import { SellerDetailDialog } from "@/components/admin/SellerDetailDialog";
 
 export default function AdminDashboard() {
   const { t, language } = useLanguage();
@@ -23,6 +24,8 @@ export default function AdminDashboard() {
   const [categories, setCategories] = useState<any[]>([]);
   const [coupons, setCoupons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSeller, setSelectedSeller] = useState<any>(null);
+  const [sellerDialogOpen, setSellerDialogOpen] = useState(false);
   
   // New category form
   const [newCatEn, setNewCatEn] = useState("");
@@ -155,7 +158,7 @@ export default function AdminDashboard() {
           {/* Sellers */}
           <TabsContent value="sellers" className="space-y-4">
             {sellers.map((s) => (
-              <Card key={s.id}>
+              <Card key={s.id} className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => { setSelectedSeller(s); setSellerDialogOpen(true); }}>
                 <CardContent className="p-4 flex items-center justify-between">
                   <div>
                     <p className="font-medium">{s.business_name}</p>
@@ -169,16 +172,9 @@ export default function AdminDashboard() {
                     <Badge variant={s.verification_status === "approved" ? "default" : s.verification_status === "rejected" ? "destructive" : "secondary"}>
                       {s.verification_status}
                     </Badge>
-                    {s.verification_status === "pending" && (
-                      <>
-                        <Button size="sm" onClick={() => updateSellerStatus(s.id, "approved")}>
-                          <CheckCircle className="h-4 w-4 me-1" />{t("approve")}
-                        </Button>
-                        <Button size="sm" variant="destructive" onClick={() => updateSellerStatus(s.id, "rejected")}>
-                          <XCircle className="h-4 w-4 me-1" />{t("reject")}
-                        </Button>
-                      </>
-                    )}
+                    <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setSelectedSeller(s); setSellerDialogOpen(true); }}>
+                      <Eye className="h-4 w-4 me-1" /> Review
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -267,6 +263,13 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <SellerDetailDialog
+        seller={selectedSeller}
+        open={sellerDialogOpen}
+        onOpenChange={setSellerDialogOpen}
+        onStatusUpdate={updateSellerStatus}
+      />
     </Layout>
   );
 }
