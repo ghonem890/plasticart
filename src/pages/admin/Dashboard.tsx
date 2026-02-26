@@ -15,7 +15,7 @@ import { Users, Package, ShoppingCart, DollarSign, CheckCircle, XCircle, Shield 
 
 export default function AdminDashboard() {
   const { t, language } = useLanguage();
-  const { user, hasRole } = useAuth();
+  const { user, hasRole, roles } = useAuth();
   const { toast } = useToast();
   const [sellers, setSellers] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
@@ -34,23 +34,36 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!user || !hasRole("admin")) return;
-    const fetch = async () => {
+    const fetchData = async () => {
       const [sRes, pRes, oRes, cRes, cpRes] = await Promise.all([
-        supabase.from("seller_profiles").select("*, profiles:user_id(display_name, phone)"),
+        supabase.from("seller_profiles").select("*"),
         supabase.from("products").select("*, seller_profiles:seller_id(business_name)").order("created_at", { ascending: false }).limit(50),
         supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(50),
         supabase.from("categories").select("*").order("sort_order"),
         supabase.from("coupons").select("*").order("created_at", { ascending: false }),
       ]);
-      setSellers(sRes.data || []);
+
+      const sellerData = sRes.data || [];
+      let profilesMap: Record<string, any> = {};
+      if (sellerData.length > 0) {
+        const userIds = sellerData.map((s: any) => s.user_id);
+        const { data: profilesData } = await supabase
+          .from("profiles")
+          .select("user_id, display_name, phone")
+          .in("user_id", userIds);
+        if (profilesData) {
+          profilesData.forEach((p: any) => { profilesMap[p.user_id] = p; });
+        }
+      }
+      setSellers(sellerData.map((s: any) => ({ ...s, profiles: profilesMap[s.user_id] || null })));
       setProducts(pRes.data || []);
       setOrders(oRes.data || []);
       setCategories(cRes.data || []);
       setCoupons(cpRes.data || []);
       setLoading(false);
     };
-    fetch();
-  }, [user]);
+    fetchData();
+  }, [user, roles]);
 
   if (!hasRole("admin")) {
     return <Layout><div className="container py-16 text-center"><Shield className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-30" /><p>Access denied</p></div></Layout>;
