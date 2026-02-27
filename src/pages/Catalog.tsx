@@ -193,13 +193,14 @@ export default function Catalog() {
                 {/* Price Range */}
                 <div className="space-y-2 sm:col-span-2">
                   <Label className="text-xs text-muted-foreground">{t("priceRange")}</Label>
-                  <div className="px-1">
+                  <div className="px-1" dir="ltr">
                     <Slider
                       min={0}
                       max={maxPrice}
                       step={Math.max(1, Math.round(maxPrice / 100))}
                       value={priceRange}
                       onValueChange={(v) => { setPriceRange(v as [number, number]); setPage(1); }}
+                      inverted
                     />
                   </div>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
