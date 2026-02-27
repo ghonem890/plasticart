@@ -203,8 +203,8 @@ export default function Catalog() {
                     />
                   </div>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{priceRange[0].toLocaleString()} {t("currencySymbol")}</span>
-                    <span>{priceRange[1].toLocaleString()} {t("currencySymbol")}</span>
+                    <span>{language === "ar" ? priceRange[0].toLocaleString() : priceRange[1].toLocaleString()} {t("currencySymbol")}</span>
+                    <span>{language === "ar" ? priceRange[1].toLocaleString() : priceRange[0].toLocaleString()} {t("currencySymbol")}</span>
                   </div>
                 </div>
 
