@@ -84,7 +84,7 @@ export const translations = {
     hasAccount: "Already have an account?",
     language: "Language",
     currency: "EGP",
-    currencySymbol: "ج.م",
+    currencySymbol: "EGP",
     noResults: "No results found",
     all: "All",
     sortBy: "Sort by",
