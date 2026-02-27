@@ -193,7 +193,7 @@ export default function Catalog() {
                 {/* Price Range */}
                 <div className="space-y-2 sm:col-span-2">
                   <Label className="text-xs text-muted-foreground">{t("priceRange")}</Label>
-                  <div className="px-1" dir="ltr">
+                  <div className="px-1">
                     <Slider
                       min={0}
                       max={maxPrice}
@@ -203,8 +203,8 @@ export default function Catalog() {
                     />
                   </div>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{language === "ar" ? priceRange[0].toLocaleString() : priceRange[1].toLocaleString()} {t("currencySymbol")}</span>
-                    <span>{language === "ar" ? priceRange[1].toLocaleString() : priceRange[0].toLocaleString()} {t("currencySymbol")}</span>
+                    <span>{priceRange[0].toLocaleString()} {t("currencySymbol")}</span>
+                    <span>{priceRange[1].toLocaleString()} {t("currencySymbol")}</span>
                   </div>
                 </div>
 
