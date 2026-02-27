@@ -200,7 +200,6 @@ export default function Catalog() {
                       step={Math.max(1, Math.round(maxPrice / 100))}
                       value={priceRange}
                       onValueChange={(v) => { setPriceRange(v as [number, number]); setPage(1); }}
-                      inverted
                     />
                   </div>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
