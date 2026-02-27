@@ -136,6 +136,9 @@ export const translations = {
     paymentMethod: "Payment Method",
     offlinePayment: "Offline Payment",
     offlinePaymentNote: "Payment will be arranged offline after order confirmation",
+    payment: "Payment",
+    notes: "Notes",
+    viewOrder: "View",
     orderPlaced: "Order placed successfully!",
     orderConfirmation: "Order Confirmation",
     
@@ -351,6 +354,9 @@ export const translations = {
     paymentMethod: "طريقة الدفع",
     offlinePayment: "الدفع عند الاستلام",
     offlinePaymentNote: "سيتم ترتيب الدفع بعد تأكيد الطلب",
+    payment: "الدفع",
+    notes: "ملاحظات",
+    viewOrder: "عرض",
     orderPlaced: "تم تقديم الطلب بنجاح!",
     orderConfirmation: "تأكيد الطلب",
     

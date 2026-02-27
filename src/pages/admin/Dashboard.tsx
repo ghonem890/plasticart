@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Users, Package, ShoppingCart, DollarSign, CheckCircle, XCircle, Shield, Eye } from "lucide-react";
 import { SellerDetailDialog } from "@/components/admin/SellerDetailDialog";
+import { OrderDetailDialog } from "@/components/OrderDetailDialog";
 
 export default function AdminDashboard() {
   const { t, language } = useLanguage();
@@ -26,6 +27,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [selectedSeller, setSelectedSeller] = useState<any>(null);
   const [sellerDialogOpen, setSellerDialogOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [orderDialogOpen, setOrderDialogOpen] = useState(false);
   
   // New category form
   const [newCatEn, setNewCatEn] = useState("");
@@ -191,14 +194,19 @@ export default function AdminDashboard() {
                     <span className="ms-2 text-sm text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</span>
                     <p className="text-sm font-semibold mt-1">{o.total.toLocaleString()} {t("currencySymbol")}</p>
                   </div>
-                  <Select value={o.status} onValueChange={(v: any) => updateOrderStatus(o.id, v)}>
-                    <SelectTrigger className="w-36 h-8"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {["pending", "confirmed", "shipped", "completed", "returned", "refunded", "cancelled"].map((s) => (
-                        <SelectItem key={s} value={s}>{s}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center gap-2">
+                    <Select value={o.status} onValueChange={(v: any) => updateOrderStatus(o.id, v)}>
+                      <SelectTrigger className="w-36 h-8"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {["pending", "confirmed", "shipped", "completed", "returned", "refunded", "cancelled"].map((s) => (
+                          <SelectItem key={s} value={s}>{s}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button variant="outline" size="sm" onClick={() => { setSelectedOrderId(o.id); setOrderDialogOpen(true); }}>
+                      <Eye className="h-4 w-4 me-1" />{t("viewOrder")}
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -270,6 +278,7 @@ export default function AdminDashboard() {
         onOpenChange={setSellerDialogOpen}
         onStatusUpdate={updateSellerStatus}
       />
+      <OrderDetailDialog orderId={selectedOrderId} open={orderDialogOpen} onOpenChange={setOrderDialogOpen} />
     </Layout>
   );
 }
