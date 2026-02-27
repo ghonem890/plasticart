@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Package, ShoppingCart, DollarSign, Plus, AlertCircle } from "lucide-react";
+import { Package, ShoppingCart, DollarSign, Plus, AlertCircle, Eye } from "lucide-react";
+import { OrderDetailDialog } from "@/components/OrderDetailDialog";
 
 export default function SellerDashboard() {
   const { t } = useLanguage();
@@ -18,6 +19,8 @@ export default function SellerDashboard() {
   const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [orderDialogOpen, setOrderDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -141,16 +144,21 @@ export default function SellerDashboard() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-mono text-muted-foreground">#{order.id.slice(0, 8)}</span>
-                  <Select value={order.status} onValueChange={(v: any) => updateOrderStatus(order.id, v)}>
-                    <SelectTrigger className="w-36 h-8">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {["pending", "confirmed", "shipped", "completed", "cancelled"].map((s) => (
-                        <SelectItem key={s} value={s}>{statusLabel(s)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center gap-2">
+                    <Select value={order.status} onValueChange={(v: any) => updateOrderStatus(order.id, v)}>
+                      <SelectTrigger className="w-36 h-8">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["pending", "confirmed", "shipped", "completed", "cancelled"].map((s) => (
+                          <SelectItem key={s} value={s}>{statusLabel(s)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button variant="outline" size="sm" onClick={() => { setSelectedOrderId(order.id); setOrderDialogOpen(true); }}>
+                      <Eye className="h-4 w-4 me-1" />{t("viewOrder")}
+                    </Button>
+                  </div>
                 </div>
                 <div className="space-y-1">
                   {order.items?.map((item: any) => (
@@ -165,6 +173,8 @@ export default function SellerDashboard() {
           ))}
         </div>
       </div>
+
+      <OrderDetailDialog orderId={selectedOrderId} open={orderDialogOpen} onOpenChange={setOrderDialogOpen} />
     </Layout>
   );
 }

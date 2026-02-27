@@ -5,7 +5,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Layout } from "@/components/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Package } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Package, Eye } from "lucide-react";
+import { OrderDetailDialog } from "@/components/OrderDetailDialog";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -22,6 +24,8 @@ export default function Orders() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -65,7 +69,12 @@ export default function Orders() {
                       <span className="text-sm text-muted-foreground font-mono">#{order.id.slice(0, 8)}</span>
                       <span className="text-sm text-muted-foreground ms-3">{new Date(order.created_at).toLocaleDateString()}</span>
                     </div>
-                    <Badge className={statusColors[order.status]}>{getStatusLabel(order.status)}</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge className={statusColors[order.status]}>{getStatusLabel(order.status)}</Badge>
+                      <Button variant="outline" size="sm" onClick={() => { setSelectedOrderId(order.id); setDialogOpen(true); }}>
+                        <Eye className="h-4 w-4 me-1" />{t("viewOrder")}
+                      </Button>
+                    </div>
                   </div>
                   <div className="space-y-1">
                     {order.order_items?.map((item: any) => (
@@ -86,6 +95,8 @@ export default function Orders() {
           </div>
         )}
       </div>
+
+      <OrderDetailDialog orderId={selectedOrderId} open={dialogOpen} onOpenChange={setDialogOpen} />
     </Layout>
   );
 }
