@@ -40,11 +40,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </Link>
             {user && (
               <>
-                <Link to="/favorites">
-                  <Button variant={isActive("/favorites") ? "secondary" : "ghost"} size="sm">
-                    <Heart className="h-4 w-4" />
-                  </Button>
-                </Link>
                 <Link to="/orders">
                   <Button variant={isActive("/orders") ? "secondary" : "ghost"} size="sm">{t("myOrders")}</Button>
                 </Link>
@@ -69,6 +64,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-1">
             <LanguageToggle />
+            {user && (
+              <Link to="/favorites">
+                <Button variant={isActive("/favorites") ? "secondary" : "ghost"} size="sm">
+                  <Heart className="h-4 w-4" />
+                </Button>
+              </Link>
+            )}
             {user && (
               <Link to="/cart">
                 <Button variant="ghost" size="sm" className="relative">
