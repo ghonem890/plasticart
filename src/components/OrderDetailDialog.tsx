@@ -90,15 +90,15 @@ export function OrderDetailDialog({ orderId, open, onOpenChange }: OrderDetailDi
             <Separator />
 
             {/* Buyer Info */}
-            {buyerProfile && (
+            {(buyerProfile || address?.phone) && (
               <div className="space-y-1">
                 <h4 className="text-sm font-semibold flex items-center gap-2">
-                  <User className="h-4 w-4" /> {t("buyer") || "Buyer"}
+                  <User className="h-4 w-4" /> {t("buyer")}
                 </h4>
-                <p className="text-sm text-muted-foreground">{buyerProfile.display_name}</p>
-                {buyerProfile.phone && (
+                {buyerProfile?.display_name && <p className="text-sm text-muted-foreground">{buyerProfile.display_name}</p>}
+                {address?.phone && (
                   <p className="text-sm text-muted-foreground flex items-center gap-1">
-                    <Phone className="h-3 w-3" /> {buyerProfile.phone}
+                    <Phone className="h-3 w-3" /> {address.phone}
                   </p>
                 )}
               </div>
@@ -116,7 +116,6 @@ export function OrderDetailDialog({ orderId, open, onOpenChange }: OrderDetailDi
                     <p>{[address.city, address.state].filter(Boolean).join(", ")}</p>
                   )}
                   {address.country && <p>{address.country}</p>}
-                  {address.phone && <p>{address.phone}</p>}
                 </div>
               </div>
             )}
