@@ -42,11 +42,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link to="/catalog">
               <Button variant={isActive("/catalog") ? "secondary" : "ghost"} size="sm">{t("products")}</Button>
             </Link>
-            {user && (
-              <Link to="/orders">
-                <Button variant={isActive("/orders") ? "secondary" : "ghost"} size="sm">{t("myOrders")}</Button>
-              </Link>
-            )}
           </nav>
 
           <div className="flex items-center gap-1">
