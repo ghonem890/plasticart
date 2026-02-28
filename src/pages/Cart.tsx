@@ -31,27 +31,31 @@ export default function Cart() {
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
               <Card key={item.productId}>
-                <CardContent className="p-4 flex items-center gap-4">
-                  <div className="h-20 w-20 rounded-lg bg-muted shrink-0 overflow-hidden">
-                    {item.imageUrl ? <img src={item.imageUrl} alt="" className="w-full h-full object-cover" /> : <ShoppingCart className="h-8 w-8 m-auto mt-6 text-muted-foreground opacity-30" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium truncate">{language === "ar" && item.titleAr ? item.titleAr : item.title}</h3>
-                    <p className="text-sm text-primary font-semibold">{item.price.toLocaleString()} {t("currencySymbol")}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(item.productId, item.quantity - 1)}>
-                      <Minus className="h-3 w-3" />
-                    </Button>
-                    <span className="w-8 text-center text-sm">{item.quantity}</span>
-                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(item.productId, item.quantity + 1)}>
-                      <Plus className="h-3 w-3" />
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="h-16 w-16 rounded-lg bg-muted shrink-0 overflow-hidden">
+                      {item.imageUrl ? <img src={item.imageUrl} alt="" className="w-full h-full object-cover" /> : <ShoppingCart className="h-6 w-6 m-auto mt-5 text-muted-foreground opacity-30" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium truncate text-sm">{language === "ar" && item.titleAr ? item.titleAr : item.title}</h3>
+                      <p className="text-sm text-primary font-semibold">{item.price.toLocaleString()} {t("currencySymbol")}</p>
+                    </div>
+                    <Button variant="ghost" size="icon" className="text-destructive shrink-0 h-8 w-8" onClick={() => removeItem(item.productId)}>
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                  <p className="font-semibold w-24 text-end">{(item.price * item.quantity).toLocaleString()} {t("currencySymbol")}</p>
-                  <Button variant="ghost" size="icon" className="text-destructive" onClick={() => removeItem(item.productId)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(item.productId, item.quantity - 1)}>
+                        <Minus className="h-3 w-3" />
+                      </Button>
+                      <span className="w-8 text-center text-sm">{item.quantity}</span>
+                      <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => updateQuantity(item.productId, item.quantity + 1)}>
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <p className="font-semibold text-sm">{(item.price * item.quantity).toLocaleString()} {t("currencySymbol")}</p>
+                  </div>
                 </CardContent>
               </Card>
             ))}
