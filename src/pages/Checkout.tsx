@@ -19,7 +19,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [address, setAddress] = useState({ street: "", city: "", state: "", postalCode: "", country: "Egypt" });
+  const [address, setAddress] = useState({ street: "", city: "", state: "", postalCode: "", phone: "" });
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [couponApplied, setCouponApplied] = useState(false);
@@ -60,7 +60,7 @@ export default function Checkout() {
 
   const handlePlaceOrder = async () => {
     if (!user || items.length === 0) return;
-    if (!address.street || !address.city) {
+    if (!address.street || !address.city || !address.phone) {
       toast({ title: "Please fill shipping address", variant: "destructive" });
       return;
     }
@@ -120,6 +120,10 @@ export default function Checkout() {
             <CardHeader><CardTitle>{t("shippingAddress")}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
+                <Label>{t("phone")}</Label>
+                <Input type="tel" value={address.phone} onChange={(e) => setAddress({ ...address, phone: e.target.value })} required placeholder="+20..." />
+              </div>
+              <div className="space-y-2">
                 <Label>{t("street")}</Label>
                 <Input value={address.street} onChange={(e) => setAddress({ ...address, street: e.target.value })} required />
               </div>
@@ -133,15 +137,9 @@ export default function Checkout() {
                   <Input value={address.state} onChange={(e) => setAddress({ ...address, state: e.target.value })} />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>{t("postalCode")}</Label>
-                  <Input value={address.postalCode} onChange={(e) => setAddress({ ...address, postalCode: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t("country")}</Label>
-                  <Input value={address.country} onChange={(e) => setAddress({ ...address, country: e.target.value })} />
-                </div>
+              <div className="space-y-2">
+                <Label>{t("postalCode")}</Label>
+                <Input value={address.postalCode} onChange={(e) => setAddress({ ...address, postalCode: e.target.value })} />
               </div>
             </CardContent>
           </Card>
