@@ -69,9 +69,9 @@ export default function SellerDashboard() {
   return (
     <Layout>
       <div className="container py-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <h1 className="text-2xl font-bold">{t("sellerDashboard")}</h1>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Badge variant={sellerProfile?.verification_status === "approved" ? "default" : "secondary"}>
               {sellerProfile?.verification_status === "approved" ? t("verificationApproved") : sellerProfile?.verification_status === "rejected" ? t("verificationRejected") : t("verificationPending")}
             </Badge>
@@ -91,23 +91,23 @@ export default function SellerDashboard() {
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center"><Package className="h-5 w-5 text-primary" /></div>
-              <div><p className="text-2xl font-bold">{products.length}</p><p className="text-xs text-muted-foreground">{t("totalProducts")}</p></div>
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><Package className="h-5 w-5 text-primary" /></div>
+              <div className="min-w-0"><p className="text-2xl font-bold">{products.length}</p><p className="text-xs text-muted-foreground truncate">{t("totalProducts")}</p></div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center"><ShoppingCart className="h-5 w-5 text-primary" /></div>
-              <div><p className="text-2xl font-bold">{orders.length}</p><p className="text-xs text-muted-foreground">{t("totalOrders")}</p></div>
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><ShoppingCart className="h-5 w-5 text-primary" /></div>
+              <div className="min-w-0"><p className="text-2xl font-bold">{orders.length}</p><p className="text-xs text-muted-foreground truncate">{t("totalOrders")}</p></div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center"><DollarSign className="h-5 w-5 text-primary" /></div>
-              <div><p className="text-2xl font-bold">{totalRevenue.toLocaleString()}</p><p className="text-xs text-muted-foreground">{t("totalRevenue")} ({t("currencySymbol")})</p></div>
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><DollarSign className="h-5 w-5 text-primary" /></div>
+              <div className="min-w-0"><p className="text-2xl font-bold">{totalRevenue.toLocaleString()}</p><p className="text-xs text-muted-foreground truncate">{t("totalRevenue")} ({t("currencySymbol")})</p></div>
             </CardContent>
           </Card>
         </div>
@@ -142,11 +142,11 @@ export default function SellerDashboard() {
           ) : orders.map((order) => (
             <Card key={order.id}>
               <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                   <span className="text-sm font-mono text-muted-foreground">#{order.id.slice(0, 8)}</span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <Select value={order.status} onValueChange={(v: any) => updateOrderStatus(order.id, v)}>
-                      <SelectTrigger className="w-36 h-8">
+                      <SelectTrigger className="w-32 h-8 text-xs">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>

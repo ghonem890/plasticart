@@ -64,12 +64,12 @@ export default function Orders() {
             {orders.map((order) => (
               <Card key={order.id}>
                 <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                    <div className="min-w-0">
                       <span className="text-sm text-muted-foreground font-mono">#{order.id.slice(0, 8)}</span>
                       <span className="text-sm text-muted-foreground ms-3">{new Date(order.created_at).toLocaleDateString()}</span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
                       <Badge className={statusColors[order.status]}>{getStatusLabel(order.status)}</Badge>
                       <Button variant="outline" size="sm" onClick={() => { setSelectedOrderId(order.id); setDialogOpen(true); }}>
                         <Eye className="h-4 w-4 me-1" />{t("viewOrder")}

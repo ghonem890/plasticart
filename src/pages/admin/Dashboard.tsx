@@ -151,33 +151,35 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="sellers">
-          <TabsList className="mb-4">
-            <TabsTrigger value="sellers">{t("sellerVerification")} {pendingSellers.length > 0 && `(${pendingSellers.length})`}</TabsTrigger>
-            <TabsTrigger value="orders">{t("orders")}</TabsTrigger>
-            <TabsTrigger value="categories">{t("categories")}</TabsTrigger>
-            <TabsTrigger value="coupons">{t("couponManagement")}</TabsTrigger>
+          <TabsList className="mb-4 w-full flex overflow-x-auto">
+            <TabsTrigger value="sellers" className="flex-1 text-xs sm:text-sm">{t("sellerVerification")} {pendingSellers.length > 0 && `(${pendingSellers.length})`}</TabsTrigger>
+            <TabsTrigger value="orders" className="flex-1 text-xs sm:text-sm">{t("orders")}</TabsTrigger>
+            <TabsTrigger value="categories" className="flex-1 text-xs sm:text-sm">{t("categories")}</TabsTrigger>
+            <TabsTrigger value="coupons" className="flex-1 text-xs sm:text-sm">{t("couponManagement")}</TabsTrigger>
           </TabsList>
 
           {/* Sellers */}
           <TabsContent value="sellers" className="space-y-4">
             {sellers.map((s) => (
               <Card key={s.id} className="cursor-pointer hover:border-primary/50 transition-colors" onClick={() => { setSelectedSeller(s); setSellerDialogOpen(true); }}>
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{s.business_name}</p>
-                    <p className="text-sm text-muted-foreground">{s.profiles?.display_name} · {s.profiles?.phone}</p>
-                    <div className="flex gap-2 mt-1">
-                      {s.contract_document_url && <Badge variant="outline">Contract ✓</Badge>}
-                      {s.id_photo_url && <Badge variant="outline">ID ✓</Badge>}
+                <CardContent className="p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">{s.business_name}</p>
+                      <p className="text-sm text-muted-foreground truncate">{s.profiles?.display_name} · {s.profiles?.phone}</p>
+                      <div className="flex gap-2 mt-1 flex-wrap">
+                        {s.contract_document_url && <Badge variant="outline">Contract ✓</Badge>}
+                        {s.id_photo_url && <Badge variant="outline">ID ✓</Badge>}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={s.verification_status === "approved" ? "default" : s.verification_status === "rejected" ? "destructive" : "secondary"}>
-                      {s.verification_status}
-                    </Badge>
-                    <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setSelectedSeller(s); setSellerDialogOpen(true); }}>
-                      <Eye className="h-4 w-4 me-1" /> Review
-                    </Button>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Badge variant={s.verification_status === "approved" ? "default" : s.verification_status === "rejected" ? "destructive" : "secondary"}>
+                        {s.verification_status}
+                      </Badge>
+                      <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); setSelectedSeller(s); setSellerDialogOpen(true); }}>
+                        <Eye className="h-4 w-4 me-1" /> Review
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -188,24 +190,26 @@ export default function AdminDashboard() {
           <TabsContent value="orders" className="space-y-4">
             {orders.map((o) => (
               <Card key={o.id}>
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div>
-                    <span className="font-mono text-sm">#{o.id.slice(0, 8)}</span>
-                    <span className="ms-2 text-sm text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</span>
-                    <p className="text-sm font-semibold mt-1">{o.total.toLocaleString()} {t("currencySymbol")}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Select value={o.status} onValueChange={(v: any) => updateOrderStatus(o.id, v)}>
-                      <SelectTrigger className="w-36 h-8"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {["pending", "confirmed", "shipped", "completed", "returned", "refunded", "cancelled"].map((s) => (
-                          <SelectItem key={s} value={s}>{s}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Button variant="outline" size="sm" onClick={() => { setSelectedOrderId(o.id); setOrderDialogOpen(true); }}>
-                      <Eye className="h-4 w-4 me-1" />{t("viewOrder")}
-                    </Button>
+                <CardContent className="p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <span className="font-mono text-sm">#{o.id.slice(0, 8)}</span>
+                      <span className="ms-2 text-sm text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</span>
+                      <p className="text-sm font-semibold mt-1">{o.total.toLocaleString()} {t("currencySymbol")}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                      <Select value={o.status} onValueChange={(v: any) => updateOrderStatus(o.id, v)}>
+                        <SelectTrigger className="w-32 h-8 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {["pending", "confirmed", "shipped", "completed", "returned", "refunded", "cancelled"].map((s) => (
+                            <SelectItem key={s} value={s}>{s}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button variant="outline" size="sm" onClick={() => { setSelectedOrderId(o.id); setOrderDialogOpen(true); }}>
+                        <Eye className="h-4 w-4 me-1" />{t("viewOrder")}
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -216,12 +220,12 @@ export default function AdminDashboard() {
           <TabsContent value="categories" className="space-y-4">
             <Card>
               <CardContent className="p-4">
-                <div className="flex gap-2 items-end">
-                  <div className="flex-1 space-y-1"><Label>English</Label><Input value={newCatEn} onChange={(e) => setNewCatEn(e.target.value)} /></div>
-                  <div className="flex-1 space-y-1"><Label>Arabic</Label><Input value={newCatAr} onChange={(e) => setNewCatAr(e.target.value)} dir="rtl" /></div>
-                  <div className="flex-1 space-y-1"><Label>Slug</Label><Input value={newCatSlug} onChange={(e) => setNewCatSlug(e.target.value)} /></div>
-                  <Button onClick={addCategory}>Add</Button>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
+                  <div className="space-y-1"><Label>English</Label><Input value={newCatEn} onChange={(e) => setNewCatEn(e.target.value)} /></div>
+                  <div className="space-y-1"><Label>Arabic</Label><Input value={newCatAr} onChange={(e) => setNewCatAr(e.target.value)} dir="rtl" /></div>
+                  <div className="space-y-1"><Label>Slug</Label><Input value={newCatSlug} onChange={(e) => setNewCatSlug(e.target.value)} /></div>
                 </div>
+                <Button onClick={addCategory} className="mt-2 w-full sm:w-auto">Add</Button>
               </CardContent>
             </Card>
             {categories.map((c) => (
@@ -238,7 +242,7 @@ export default function AdminDashboard() {
           <TabsContent value="coupons" className="space-y-4">
             <Card>
               <CardContent className="p-4 space-y-3">
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-2 items-end">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 items-end">
                   <div className="space-y-1"><Label>Code</Label><Input value={newCoupon.code} onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })} /></div>
                   <div className="space-y-1"><Label>Type</Label>
                     <Select value={newCoupon.discountType} onValueChange={(v: "percentage" | "fixed") => setNewCoupon({ ...newCoupon, discountType: v })}>
@@ -248,8 +252,8 @@ export default function AdminDashboard() {
                   </div>
                   <div className="space-y-1"><Label>Amount</Label><Input type="number" value={newCoupon.discountAmount} onChange={(e) => setNewCoupon({ ...newCoupon, discountAmount: e.target.value })} /></div>
                   <div className="space-y-1"><Label>Max Uses</Label><Input type="number" value={newCoupon.maxUses} onChange={(e) => setNewCoupon({ ...newCoupon, maxUses: e.target.value })} /></div>
-                  <Button onClick={addCoupon}>Add</Button>
                 </div>
+                <Button onClick={addCoupon} className="mt-2 w-full sm:w-auto">Add</Button>
               </CardContent>
             </Card>
             {coupons.map((c) => (
