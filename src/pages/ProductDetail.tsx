@@ -163,22 +163,6 @@ export default function ProductDetail() {
               </Button>
             </div>
 
-            {/* Seller */}
-            {seller && (
-              <Card>
-                <CardContent className="p-4 flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Store className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium">{language === "ar" && seller.business_name_ar ? seller.business_name_ar : seller.business_name}</p>
-                    <Badge variant={seller.verification_status === "approved" ? "default" : "secondary"} className="text-xs">
-                      {seller.verification_status === "approved" ? t("verificationApproved") : t("verificationPending")}
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
             {/* Specs */}
             {product.specs && Object.keys(product.specs).length > 0 && (
