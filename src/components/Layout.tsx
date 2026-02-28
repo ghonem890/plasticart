@@ -5,8 +5,12 @@ import { useCart } from "@/contexts/CartContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuSeparator, DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import {
   Package, LogIn, UserPlus, LogOut, ShoppingCart,
-  Heart, LayoutDashboard, Menu, X
+  Heart, LayoutDashboard, Menu, X, User, ShoppingBag, Store
 } from "lucide-react";
 import { useState } from "react";
 
@@ -39,38 +43,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <Button variant={isActive("/catalog") ? "secondary" : "ghost"} size="sm">{t("products")}</Button>
             </Link>
             {user && (
-              <>
-                <Link to="/orders">
-                  <Button variant={isActive("/orders") ? "secondary" : "ghost"} size="sm">{t("myOrders")}</Button>
-                </Link>
-              </>
-            )}
-            {user && hasRole("seller") && (
-              <Link to="/seller">
-                <Button variant={location.pathname.startsWith("/seller") ? "secondary" : "ghost"} size="sm">
-                  {t("sellerDashboard")}
-                </Button>
-              </Link>
-            )}
-            {user && hasRole("admin") && (
-              <Link to="/admin">
-                <Button variant={location.pathname.startsWith("/admin") ? "secondary" : "ghost"} size="sm">
-                  <LayoutDashboard className="h-4 w-4 me-1" />
-                  {t("admin")}
-                </Button>
+              <Link to="/orders">
+                <Button variant={isActive("/orders") ? "secondary" : "ghost"} size="sm">{t("myOrders")}</Button>
               </Link>
             )}
           </nav>
 
           <div className="flex items-center gap-1">
             <LanguageToggle />
-            {user && (
-              <Link to="/favorites">
-                <Button variant={isActive("/favorites") ? "secondary" : "ghost"} size="sm">
-                  <Heart className="h-4 w-4" />
-                </Button>
-              </Link>
-            )}
             {user && (
               <Link to="/cart">
                 <Button variant="ghost" size="sm" className="relative">
@@ -84,9 +64,43 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             )}
             {user ? (
-              <Button variant="ghost" size="sm" onClick={signOut}>
-                <LogOut className="h-4 w-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+                    <User className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link to="/favorites" className="flex items-center gap-2 cursor-pointer">
+                      <Heart className="h-4 w-4" /> {t("favorites")}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/orders" className="flex items-center gap-2 cursor-pointer">
+                      <ShoppingBag className="h-4 w-4" /> {t("myOrders")}
+                    </Link>
+                  </DropdownMenuItem>
+                  {hasRole("seller") && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/seller" className="flex items-center gap-2 cursor-pointer">
+                        <Store className="h-4 w-4" /> {t("sellerDashboard")}
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {hasRole("admin") && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="flex items-center gap-2 cursor-pointer">
+                        <LayoutDashboard className="h-4 w-4" /> {t("admin")}
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={signOut} className="flex items-center gap-2 cursor-pointer text-destructive">
+                    <LogOut className="h-4 w-4" /> {t("logout")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <>
                 <Link to="/login">
@@ -119,22 +133,27 @@ export function Layout({ children }: { children: React.ReactNode }) {
             {user && (
               <>
                 <Link to="/favorites" onClick={() => setMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start">{t("favorites")}</Button>
+                  <Button variant="ghost" className="w-full justify-start gap-2"><Heart className="h-4 w-4" />{t("favorites")}</Button>
                 </Link>
                 <Link to="/orders" onClick={() => setMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start">{t("myOrders")}</Button>
+                  <Button variant="ghost" className="w-full justify-start gap-2"><ShoppingBag className="h-4 w-4" />{t("myOrders")}</Button>
                 </Link>
               </>
             )}
             {user && hasRole("seller") && (
               <Link to="/seller" onClick={() => setMenuOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start">{t("sellerDashboard")}</Button>
+                <Button variant="ghost" className="w-full justify-start gap-2"><Store className="h-4 w-4" />{t("sellerDashboard")}</Button>
               </Link>
             )}
             {user && hasRole("admin") && (
               <Link to="/admin" onClick={() => setMenuOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start">{t("adminDashboard")}</Button>
+                <Button variant="ghost" className="w-full justify-start gap-2"><LayoutDashboard className="h-4 w-4" />{t("adminDashboard")}</Button>
               </Link>
+            )}
+            {user && (
+              <Button variant="ghost" className="w-full justify-start gap-2 text-destructive" onClick={() => { signOut(); setMenuOpen(false); }}>
+                <LogOut className="h-4 w-4" />{t("logout")}
+              </Button>
             )}
             {!user && (
               <>
