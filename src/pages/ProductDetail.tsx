@@ -28,6 +28,8 @@ export default function ProductDetail() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [seller, setSeller] = useState<any>(null);
   const [reviews, setReviews] = useState<any[]>([]);
+  const [sellerAvgRating, setSellerAvgRating] = useState(0);
+  const [sellerReviewCount, setSellerReviewCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [hasPurchased, setHasPurchased] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -49,6 +51,16 @@ export default function ProductDetail() {
         setQuantity(prodRes.data.min_order_qty);
         const sellerRes = await supabase.from("seller_profiles").select("*").eq("user_id", prodRes.data.seller_id).single();
         setSeller(sellerRes.data);
+        // Fetch all seller's products to calculate seller-wide review stats
+        const { data: sellerProducts } = await supabase.from("products").select("id").eq("seller_id", prodRes.data.seller_id).eq("status", "active");
+        if (sellerProducts && sellerProducts.length > 0) {
+          const sellerProductIds = sellerProducts.map((p: any) => p.id);
+          const { data: sellerReviews } = await supabase.from("reviews").select("rating").in("product_id", sellerProductIds);
+          if (sellerReviews && sellerReviews.length > 0) {
+            setSellerAvgRating(sellerReviews.reduce((s: number, r: any) => s + r.rating, 0) / sellerReviews.length);
+            setSellerReviewCount(sellerReviews.length);
+          }
+        }
       }
       setImages(imgRes.data || []);
       setReviews(revRes.data || []);
@@ -244,11 +256,11 @@ export default function ProductDetail() {
                       <p className="text-sm text-muted-foreground line-clamp-2">{language === "ar" ? seller.description_ar : seller.description}</p>
                     )}
                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      {avgRating > 0 && (
+                      {sellerAvgRating > 0 && (
                         <div className="flex items-center gap-1">
                           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="font-medium text-foreground">{avgRating.toFixed(1)}</span>
-                          <span>({reviews.length})</span>
+                          <span className="font-medium text-foreground">{sellerAvgRating.toFixed(1)}</span>
+                          <span>({sellerReviewCount})</span>
                         </div>
                       )}
                     </div>
