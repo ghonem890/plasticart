@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { ShoppingCart, Heart, GitCompareArrows, Star, Minus, Plus, Store, Package } from "lucide-react";
 
@@ -197,74 +196,68 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* Tabs: Reviews & Seller */}
-        <Tabs defaultValue="reviews" className="mt-12">
-          <TabsList>
-            <TabsTrigger value="reviews">{t("reviews")} ({reviews.length})</TabsTrigger>
-            <TabsTrigger value="seller">{t("seller")}</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="reviews">
-            {reviews.length === 0 ? (
-              <p className="text-muted-foreground py-4">{t("noReviews")}</p>
-            ) : (
-              <div className="space-y-4 mt-4">
-                {reviews.map((r) => (
-                  <Card key={r.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="flex">{Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className={`h-4 w-4 ${i < r.rating ? "fill-yellow-400 text-yellow-400" : "text-muted"}`} />
-                        ))}</div>
-                        <span className="text-sm text-muted-foreground">{r.profiles?.display_name}</span>
-                      </div>
-                      {r.comment && <p className="text-sm">{r.comment}</p>}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="seller">
-            {seller ? (
-              <Link to={`/seller/${product.seller_id}`} className="block mt-4">
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-6 flex items-start gap-4">
-                    <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                      <Store className="h-7 w-7 text-primary" />
+        {/* Seller Section */}
+        {seller && (
+          <section className="mt-12">
+            <h2 className="text-xl font-semibold mb-4">{t("seller")}</h2>
+            <Link to={`/seller/${product.seller_id}`}>
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="p-6 flex items-start gap-4">
+                  <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Store className="h-7 w-7 text-primary" />
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="text-lg font-semibold">
+                        {language === "ar" && seller.business_name_ar ? seller.business_name_ar : seller.business_name}
+                      </h3>
+                      <Badge variant={seller.verification_status === "approved" ? "default" : "secondary"} className="text-xs">
+                        {seller.verification_status === "approved" ? t("verificationApproved") : t("verificationPending")}
+                      </Badge>
                     </div>
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-lg font-semibold">
-                          {language === "ar" && seller.business_name_ar ? seller.business_name_ar : seller.business_name}
-                        </h3>
-                        <Badge variant={seller.verification_status === "approved" ? "default" : "secondary"} className="text-xs">
-                          {seller.verification_status === "approved" ? t("verificationApproved") : t("verificationPending")}
-                        </Badge>
-                      </div>
-                      {(language === "ar" ? seller.description_ar : seller.description) && (
-                        <p className="text-sm text-muted-foreground line-clamp-2">{language === "ar" ? seller.description_ar : seller.description}</p>
+                    {(language === "ar" ? seller.description_ar : seller.description) && (
+                      <p className="text-sm text-muted-foreground line-clamp-2">{language === "ar" ? seller.description_ar : seller.description}</p>
+                    )}
+                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                      {avgRating > 0 && (
+                        <div className="flex items-center gap-1">
+                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                          <span className="font-medium text-foreground">{avgRating.toFixed(1)}</span>
+                          <span>({reviews.length})</span>
+                        </div>
                       )}
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                        {avgRating > 0 && (
-                          <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            <span className="font-medium text-foreground">{avgRating.toFixed(1)}</span>
-                            <span>({reviews.length})</span>
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-xs text-primary font-medium">{t("viewDetails")} →</p>
                     </div>
+                    <p className="text-xs text-primary font-medium">{t("viewDetails")} →</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </section>
+        )}
+
+        {/* Reviews */}
+        <section className="mt-8">
+          <h2 className="text-xl font-semibold mb-4">{t("reviews")} ({reviews.length})</h2>
+          {reviews.length === 0 ? (
+            <p className="text-muted-foreground">{t("noReviews")}</p>
+          ) : (
+            <div className="space-y-4">
+              {reviews.map((r) => (
+                <Card key={r.id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex">{Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} className={`h-4 w-4 ${i < r.rating ? "fill-yellow-400 text-yellow-400" : "text-muted"}`} />
+                      ))}</div>
+                      <span className="text-sm text-muted-foreground">{r.profiles?.display_name}</span>
+                    </div>
+                    {r.comment && <p className="text-sm">{r.comment}</p>}
                   </CardContent>
                 </Card>
-              </Link>
-            ) : (
-              <p className="text-muted-foreground py-4">{t("noResults")}</p>
-            )}
-          </TabsContent>
-        </Tabs>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </Layout>
   );
