@@ -4,7 +4,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, User, Calendar, Package, CreditCard } from "lucide-react";
+import { MapPin, User, Calendar, Package, Phone } from "lucide-react";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -25,7 +25,6 @@ interface OrderDetailDialogProps {
 export function OrderDetailDialog({ orderId, open, onOpenChange }: OrderDetailDialogProps) {
   const { t, language } = useLanguage();
   const [order, setOrder] = useState<any>(null);
-  const [payment, setPayment] = useState<any>(null);
   const [buyerProfile, setBuyerProfile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
@@ -33,18 +32,16 @@ export function OrderDetailDialog({ orderId, open, onOpenChange }: OrderDetailDi
     if (!orderId || !open) return;
     setLoading(true);
     const fetchOrder = async () => {
-      const [orderRes, paymentRes] = await Promise.all([
+      const [orderRes] = await Promise.all([
         supabase
           .from("orders")
           .select("*, order_items(*, products(title_en, title_ar, price))")
           .eq("id", orderId)
           .single(),
-        supabase.from("payments").select("*").eq("order_id", orderId).limit(1),
       ]);
 
       const orderData = orderRes.data;
       setOrder(orderData);
-      setPayment(paymentRes.data?.[0] || null);
 
       if (orderData?.buyer_id) {
         const { data: profile } = await supabase
@@ -99,7 +96,11 @@ export function OrderDetailDialog({ orderId, open, onOpenChange }: OrderDetailDi
                   <User className="h-4 w-4" /> {t("buyer") || "Buyer"}
                 </h4>
                 <p className="text-sm text-muted-foreground">{buyerProfile.display_name}</p>
-                {buyerProfile.phone && <p className="text-sm text-muted-foreground">{buyerProfile.phone}</p>}
+                {buyerProfile.phone && (
+                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                    <Phone className="h-3 w-3" /> {buyerProfile.phone}
+                  </p>
+                )}
               </div>
             )}
 
@@ -146,18 +147,6 @@ export function OrderDetailDialog({ orderId, open, onOpenChange }: OrderDetailDi
               <span className="text-primary">{order.total.toLocaleString()} {t("currencySymbol")}</span>
             </div>
 
-            {/* Payment */}
-            {payment && (
-              <div className="space-y-1">
-                <h4 className="text-sm font-semibold flex items-center gap-2">
-                  <CreditCard className="h-4 w-4" /> {t("payment") || "Payment"}
-                </h4>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>{payment.method}</span>
-                  <Badge variant="outline" className="text-xs">{payment.status}</Badge>
-                </div>
-              </div>
-            )}
 
             {/* Notes */}
             {order.notes && (
