@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Package, Loader2 } from "lucide-react";
+import { Layout } from "@/components/Layout";
 
 export default function Register() {
   const { t } = useLanguage();
@@ -64,10 +65,8 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 py-8">
-      <div className="absolute top-4 end-4">
-        <LanguageToggle />
-      </div>
+    <Layout>
+    <div className="min-h-[calc(100vh-3.5rem)] flex items-center justify-center bg-muted/30 px-4 py-8">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
           <div className="flex justify-center mb-2">
@@ -166,5 +165,6 @@ export default function Register() {
         </form>
       </Card>
     </div>
+    </Layout>
   );
 }
