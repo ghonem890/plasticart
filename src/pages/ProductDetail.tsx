@@ -11,7 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { ShoppingCart, Heart, GitCompareArrows, Star, Minus, Plus, Store, Package } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { ShoppingCart, Heart, GitCompareArrows, Star, Minus, Plus, Store, Package, MessageSquarePlus } from "lucide-react";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -28,10 +29,16 @@ export default function ProductDetail() {
   const [seller, setSeller] = useState<any>(null);
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasPurchased, setHasPurchased] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
 
   useEffect(() => {
     if (!id) return;
-    const fetch = async () => {
+    const fetchData = async () => {
       const [prodRes, imgRes, revRes] = await Promise.all([
         supabase.from("products").select("*, categories(name_en, name_ar)").eq("id", id).single(),
         supabase.from("product_images").select("*").eq("product_id", id).order("display_order"),
@@ -48,11 +55,45 @@ export default function ProductDetail() {
       if (user) {
         const favRes = await supabase.from("favorites").select("id").eq("user_id", user.id).eq("product_id", id);
         setIsFavorited((favRes.data || []).length > 0);
+        // Check if user purchased this product
+        const { data: orderItems } = await supabase
+          .from("order_items")
+          .select("id, order_id, orders!inner(buyer_id, status)")
+          .eq("product_id", id)
+          .eq("orders.buyer_id", user.id);
+        const completed = (orderItems || []).some((oi: any) => 
+          ["confirmed", "shipped", "completed"].includes(oi.orders?.status)
+        );
+        setHasPurchased(completed);
+        // Check if user already reviewed
+        setHasReviewed((revRes.data || []).some((r: any) => r.buyer_id === user.id));
       }
       setLoading(false);
     };
-    fetch();
+    fetchData();
   }, [id, user]);
+
+  const handleSubmitReview = async () => {
+    if (!user || !id) return;
+    setSubmittingReview(true);
+    const { data, error } = await supabase.from("reviews").insert({
+      product_id: id,
+      buyer_id: user.id,
+      rating: reviewRating,
+      comment: reviewComment || null,
+    }).select("*, profiles:buyer_id(display_name)").single();
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else if (data) {
+      setReviews([data, ...reviews]);
+      setShowReviewForm(false);
+      setReviewComment("");
+      setReviewRating(5);
+      setHasReviewed(true);
+      toast({ title: t("reviews") + " ✓" });
+    }
+    setSubmittingReview(false);
+  };
 
   if (loading) return <Layout><div className="container py-16 text-center text-muted-foreground">{t("loading")}</div></Layout>;
   if (!product) return <Layout><div className="container py-16 text-center">{t("noResults")}</div></Layout>;
@@ -221,8 +262,46 @@ export default function ProductDetail() {
 
         {/* Reviews */}
         <section className="mt-8">
-          <h2 className="text-xl font-semibold mb-4">{t("reviews")} ({reviews.length})</h2>
-          {reviews.length === 0 ? (
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">{t("reviews")} ({reviews.length})</h2>
+            {user && hasPurchased && !hasReviewed && (
+              <Button variant="outline" size="sm" onClick={() => setShowReviewForm(!showReviewForm)}>
+                <MessageSquarePlus className="h-4 w-4 me-2" />
+                {language === "ar" ? "أضف تقييم" : "Add Review"}
+              </Button>
+            )}
+          </div>
+
+          {showReviewForm && (
+            <Card className="mb-4">
+              <CardContent className="p-4 space-y-4">
+                <div>
+                  <p className="text-sm font-medium mb-2">{language === "ar" ? "التقييم" : "Rating"}</p>
+                  <div className="flex gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <button key={i} onClick={() => setReviewRating(i + 1)}>
+                        <Star className={`h-6 w-6 cursor-pointer transition-colors ${i < reviewRating ? "fill-yellow-400 text-yellow-400" : "text-muted hover:text-yellow-300"}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-medium mb-2">{language === "ar" ? "تعليق (اختياري)" : "Comment (optional)"}</p>
+                  <Textarea value={reviewComment} onChange={(e) => setReviewComment(e.target.value)} placeholder={language === "ar" ? "اكتب تعليقك هنا..." : "Write your comment here..."} />
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={handleSubmitReview} disabled={submittingReview} size="sm">
+                    {submittingReview ? (language === "ar" ? "جاري الإرسال..." : "Submitting...") : (language === "ar" ? "إرسال" : "Submit")}
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => setShowReviewForm(false)}>
+                    {language === "ar" ? "إلغاء" : "Cancel"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {reviews.length === 0 && !showReviewForm ? (
             <p className="text-muted-foreground">{t("noReviews")}</p>
           ) : (
             <div className="space-y-4">
