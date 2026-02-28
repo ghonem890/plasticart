@@ -137,7 +137,7 @@ export default function ProductForm() {
             <Card>
               <CardHeader><CardTitle>{t("price")}</CardTitle></CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-3 gap-4 items-end">
                   <div className="space-y-2">
                     <Label>{t("productPrice")} *</Label>
                     <Input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
