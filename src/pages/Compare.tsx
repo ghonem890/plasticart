@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useCompare } from "@/contexts/CompareContext";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { GitCompareArrows, X } from "lucide-react";
+import { GitCompareArrows, X, DollarSign, Package, Layers, Tag, Eye, Box } from "lucide-react";
 
 export default function Compare() {
   const { t, language } = useLanguage();
@@ -17,7 +17,7 @@ export default function Compare() {
     if (items.length === 0) { setProducts([]); return; }
     const ids = items.map((i) => i.productId);
     supabase.from("products")
-      .select("*, product_images(image_url, display_order), categories(name_en, name_ar), seller_profiles:seller_id(business_name)")
+      .select("*, product_images(image_url, display_order), categories(name_en, name_ar)")
       .in("id", ids)
       .then(({ data }) => setProducts(data || []));
   }, [items]);
@@ -50,16 +50,18 @@ export default function Compare() {
           <h1 className="text-2xl font-bold">{t("compareProducts")}</h1>
           <Button variant="outline" size="sm" onClick={clearAll}>{t("clearCart")}</Button>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-lg border">
           <table className="w-full min-w-[600px]">
             <thead>
-              <tr>
-                <th className="text-start p-3 text-sm text-muted-foreground w-32"></th>
+              <tr className="bg-muted/50">
+                <th className="text-start p-3 text-sm text-muted-foreground w-40"></th>
                 {products.map((p) => (
                   <th key={p.id} className="p-3 text-start">
                     <div className="space-y-2">
                       <div className="aspect-square w-32 rounded-lg bg-muted overflow-hidden">
-                        {getImage(p) ? <img src={getImage(p)} alt="" className="w-full h-full object-cover" /> : null}
+                        {getImage(p) ? <img src={getImage(p)} alt="" className="w-full h-full object-cover" /> : (
+                          <div className="w-full h-full flex items-center justify-center"><Box className="h-8 w-8 text-muted-foreground/30" /></div>
+                        )}
                       </div>
                       <p className="font-medium text-sm">{language === "ar" && p.title_ar ? p.title_ar : p.title_en}</p>
                       <Button variant="ghost" size="sm" onClick={() => removeItem(p.id)}>
@@ -72,31 +74,44 @@ export default function Compare() {
             </thead>
             <tbody>
               <tr className="border-t">
-                <td className="p-3 text-sm text-muted-foreground">{t("price")}</td>
+                <td className="p-3 text-sm text-muted-foreground flex items-center gap-1.5"><DollarSign className="h-4 w-4" />{t("price")}</td>
                 {products.map((p) => <td key={p.id} className="p-3 font-semibold text-primary">{p.price.toLocaleString()} {t("currencySymbol")}</td>)}
               </tr>
-              <tr className="border-t">
-                <td className="p-3 text-sm text-muted-foreground">{t("minOrder")}</td>
+              <tr className="border-t bg-muted/30">
+                <td className="p-3 text-sm text-muted-foreground flex items-center gap-1.5"><Layers className="h-4 w-4" />{t("minOrder")}</td>
                 {products.map((p) => <td key={p.id} className="p-3">{p.min_order_qty} {t("pieces")}</td>)}
               </tr>
               <tr className="border-t">
-                <td className="p-3 text-sm text-muted-foreground">{t("stock")}</td>
+                <td className="p-3 text-sm text-muted-foreground flex items-center gap-1.5"><Package className="h-4 w-4" />{t("stock")}</td>
                 {products.map((p) => (
                   <td key={p.id} className="p-3">
-                    <Badge variant={p.stock > 0 ? "default" : "destructive"}>{p.stock > 0 ? t("inStock") : t("outOfStock")}</Badge>
+                    <Badge variant={p.stock > 0 ? "default" : "destructive"}>{p.stock > 0 ? `${t("inStock")} (${p.stock})` : t("outOfStock")}</Badge>
                   </td>
                 ))}
               </tr>
-              <tr className="border-t">
-                <td className="p-3 text-sm text-muted-foreground">{t("categories")}</td>
+              <tr className="border-t bg-muted/30">
+                <td className="p-3 text-sm text-muted-foreground flex items-center gap-1.5"><Tag className="h-4 w-4" />{t("categories")}</td>
                 {products.map((p) => <td key={p.id} className="p-3">{p.categories ? (language === "ar" ? p.categories.name_ar : p.categories.name_en) : "-"}</td>)}
               </tr>
-              {Array.from(allSpecs).map((spec) => (
-                <tr key={spec} className="border-t">
+              {Array.from(allSpecs).map((spec, i) => (
+                <tr key={spec} className={`border-t ${i % 2 === 0 ? "" : "bg-muted/30"}`}>
                   <td className="p-3 text-sm text-muted-foreground">{spec}</td>
                   {products.map((p) => <td key={p.id} className="p-3 text-sm">{p.specs?.[spec] || "-"}</td>)}
                 </tr>
               ))}
+              {/* View button row */}
+              <tr className="border-t">
+                <td className="p-3 text-sm text-muted-foreground">{t("viewDetails")}</td>
+                {products.map((p) => (
+                  <td key={p.id} className="p-3">
+                    <Link to={`/product/${p.id}`}>
+                      <Button variant="outline" size="sm">
+                        <Eye className="h-4 w-4 me-1" />{t("viewDetails")}
+                      </Button>
+                    </Link>
+                  </td>
+                ))}
+              </tr>
             </tbody>
           </table>
         </div>
