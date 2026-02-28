@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Package, ShoppingCart, DollarSign, CheckCircle, XCircle, Shield, Eye } from "lucide-react";
+import { Users, Package, ShoppingCart, DollarSign, CheckCircle, XCircle, Shield, Eye, Pencil } from "lucide-react";
 import { SellerDetailDialog } from "@/components/admin/SellerDetailDialog";
 import { OrderDetailDialog } from "@/components/OrderDetailDialog";
 
@@ -30,10 +30,11 @@ export default function AdminDashboard() {
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [orderDialogOpen, setOrderDialogOpen] = useState(false);
   
-  // New category form
+  // New/edit category form
   const [newCatEn, setNewCatEn] = useState("");
   const [newCatAr, setNewCatAr] = useState("");
   const [newCatSlug, setNewCatSlug] = useState("");
+  const [editingCatId, setEditingCatId] = useState<string | null>(null);
   
   // New coupon form
   const [newCoupon, setNewCoupon] = useState({ code: "", discountType: "percentage" as "percentage" | "fixed", discountAmount: "", maxUses: "", minOrderAmount: "" });
@@ -91,11 +92,31 @@ export default function AdminDashboard() {
 
   const addCategory = async () => {
     if (!newCatEn || !newCatAr || !newCatSlug) return;
-    const { data, error } = await supabase.from("categories").insert({ name_en: newCatEn, name_ar: newCatAr, slug: newCatSlug, sort_order: categories.length }).select().single();
-    if (error) { toast({ title: error.message, variant: "destructive" }); return; }
-    setCategories([...categories, data]);
+    if (editingCatId) {
+      const { error } = await supabase.from("categories").update({ name_en: newCatEn, name_ar: newCatAr, slug: newCatSlug }).eq("id", editingCatId);
+      if (error) { toast({ title: error.message, variant: "destructive" }); return; }
+      setCategories((prev) => prev.map((c) => c.id === editingCatId ? { ...c, name_en: newCatEn, name_ar: newCatAr, slug: newCatSlug } : c));
+      setEditingCatId(null);
+      toast({ title: "Category updated" });
+    } else {
+      const { data, error } = await supabase.from("categories").insert({ name_en: newCatEn, name_ar: newCatAr, slug: newCatSlug, sort_order: categories.length }).select().single();
+      if (error) { toast({ title: error.message, variant: "destructive" }); return; }
+      setCategories([...categories, data]);
+      toast({ title: "Category added" });
+    }
     setNewCatEn(""); setNewCatAr(""); setNewCatSlug("");
-    toast({ title: "Category added" });
+  };
+
+  const startEditCategory = (cat: any) => {
+    setEditingCatId(cat.id);
+    setNewCatEn(cat.name_en);
+    setNewCatAr(cat.name_ar);
+    setNewCatSlug(cat.slug);
+  };
+
+  const cancelEditCategory = () => {
+    setEditingCatId(null);
+    setNewCatEn(""); setNewCatAr(""); setNewCatSlug("");
   };
 
   const deleteCategory = async (catId: string) => {
@@ -225,14 +246,20 @@ export default function AdminDashboard() {
                   <div className="space-y-1"><Label>Arabic</Label><Input value={newCatAr} onChange={(e) => setNewCatAr(e.target.value)} dir="rtl" /></div>
                   <div className="space-y-1"><Label>Slug</Label><Input value={newCatSlug} onChange={(e) => setNewCatSlug(e.target.value)} /></div>
                 </div>
-                <Button onClick={addCategory} className="mt-2 w-full sm:w-auto">Add</Button>
+                <div className="flex gap-2 mt-2">
+                  <Button onClick={addCategory} className="w-full sm:w-auto">{editingCatId ? t("save") : "Add"}</Button>
+                  {editingCatId && <Button variant="outline" onClick={cancelEditCategory}>Cancel</Button>}
+                </div>
               </CardContent>
             </Card>
             {categories.map((c) => (
               <Card key={c.id}>
                 <CardContent className="p-4 flex items-center justify-between">
                   <div><p className="font-medium">{c.name_en}</p><p className="text-sm text-muted-foreground">{c.name_ar} · /{c.slug}</p></div>
-                  <Button variant="destructive" size="sm" onClick={() => deleteCategory(c.id)}>{t("delete")}</Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => startEditCategory(c)}><Pencil className="h-4 w-4 me-1" />{t("edit")}</Button>
+                    <Button variant="destructive" size="sm" onClick={() => deleteCategory(c.id)}>{t("delete")}</Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
