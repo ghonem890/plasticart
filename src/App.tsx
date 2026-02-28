@@ -25,6 +25,7 @@ import SellerOnboarding from "./pages/seller/Onboarding";
 import SellerDashboard from "./pages/seller/Dashboard";
 import ProductForm from "./pages/seller/ProductForm";
 import AdminDashboard from "./pages/admin/Dashboard";
+import SellerProfile from "./pages/SellerProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +59,7 @@ const App = () => (
                   <Route path="/seller/products/new" element={<ProductForm />} />
                   <Route path="/seller/products/:id/edit" element={<ProductForm />} />
                   <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/seller/:sellerId" element={<SellerProfile />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <CompareTray />
