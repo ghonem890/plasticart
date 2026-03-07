@@ -1,3 +1,4 @@
+// Compare tray floating component
 import { Link, useLocation } from "react-router-dom";
 import { useCompare } from "@/contexts/CompareContext";
 import { useLanguage } from "@/i18n/LanguageContext";
