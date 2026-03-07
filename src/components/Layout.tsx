@@ -13,6 +13,7 @@ import {
   Heart, LayoutDashboard, Menu, X, User, ShoppingBag, Store
 } from "lucide-react";
 import { useState } from "react";
+import { Footer } from "@/components/Footer";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { user, signOut, hasRole } = useAuth();
@@ -24,7 +25,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <div className="container flex h-14 items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2.5 shrink-0">
@@ -163,7 +164,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </div>
         )}
       </header>
-      <main>{children}</main>
+      <main className="flex-1">{children}</main>
+      <Footer />
     </div>
   );
 }
