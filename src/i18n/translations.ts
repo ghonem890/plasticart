@@ -103,7 +103,7 @@ export const translations = {
     brandName: "Plasticart",
     brandTagline: "Your Packaging Marketplace",
     heroTitle: "Find Quality Packaging Products",
-    heroSubtitle: "Browse thousands of packaging solutions from verified manufacturers and traders",
+    heroSubtitle: "Explore a marketplace of plastic and packaging products from verified suppliers. Compare options and discover eco-friendly packaging solutions in one place",
     
     // Product
     price: "Price",
@@ -322,7 +322,7 @@ export const translations = {
     brandName: "بلاستيكارت",
     brandTagline: "سوقك للتغليف",
     heroTitle: "اعثر على منتجات تغليف عالية الجودة",
-    heroSubtitle: "تصفح آلاف حلول التغليف من مصنعين وتجار معتمدين",
+    heroSubtitle: "استكشف سوقًا لمنتجات البلاستيك والتغليف من موردين معتمدين. قارن الخيارات واكتشف حلول التغليف الصديقة للبيئة في مكان واحد",
     
     // Product
     price: "السعر",
