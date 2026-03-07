@@ -221,6 +221,15 @@ export const translations = {
     next: "Next",
     previous: "Previous",
     complete: "Complete",
+
+    // Footer
+    footerAbout: "Your trusted B2B marketplace for wholesale products.",
+    footerQuickLinks: "Quick Links",
+    footerSupport: "Support",
+    footerContactUs: "Contact Us",
+    footerPrivacy: "Privacy Policy",
+    footerTerms: "Terms of Service",
+    footerRights: "All rights reserved.",
   },
   ar: {
     // Nav
@@ -444,6 +453,15 @@ export const translations = {
     next: "التالي",
     previous: "السابق",
     complete: "إتمام",
+
+    // Footer
+    footerAbout: "سوقك الموثوق للبيع بالجملة بين الشركات.",
+    footerQuickLinks: "روابط سريعة",
+    footerSupport: "الدعم",
+    footerContactUs: "اتصل بنا",
+    footerPrivacy: "سياسة الخصوصية",
+    footerTerms: "شروط الخدمة",
+    footerRights: "جميع الحقوق محفوظة.",
   },
 } as const;
 
