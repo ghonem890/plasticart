@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageToggle } from "@/components/LanguageToggle";
@@ -14,6 +14,8 @@ import { Layout } from "@/components/Layout";
 export default function Register() {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialRole = searchParams.get("role") === "seller" ? "seller" : "buyer";
   const { toast } = useToast();
   const [form, setForm] = useState({
     email: "",
@@ -21,7 +23,7 @@ export default function Register() {
     confirmPassword: "",
     displayName: "",
     phone: "",
-    role: "buyer" as "buyer" | "seller",
+    role: initialRole as "buyer" | "seller",
   });
   const [loading, setLoading] = useState(false);
 
