@@ -48,7 +48,7 @@ export default function Compare() {
       <div className="container py-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">{t("compareProducts")}</h1>
-          <Button variant="outline" size="sm" onClick={clearAll}>{t("clearCart")}</Button>
+          <Button variant="outline" size="sm" onClick={clearAll}>{t("clearCompare")}</Button>
         </div>
         <div className="overflow-x-auto rounded-lg border">
           <table className="w-full min-w-[600px]">

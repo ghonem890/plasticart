@@ -60,6 +60,7 @@ export const translations = {
     placeOrder: "Place Order",
     continueShopping: "Continue Shopping",
     clearCart: "Clear Cart",
+    clearCompare: "Clear",
     apply: "Apply",
     
     // Auth feedback
@@ -282,6 +283,7 @@ export const translations = {
     placeOrder: "تأكيد الطلب",
     continueShopping: "متابعة التسوق",
     clearCart: "تفريغ السلة",
+    clearCompare: "مسح",
     apply: "تطبيق",
     
     // Auth feedback
