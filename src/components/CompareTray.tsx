@@ -7,8 +7,9 @@ import { X, GitCompareArrows } from "lucide-react";
 export function CompareTray() {
   const { items, removeItem, clearAll } = useCompare();
   const { t, language } = useLanguage();
+  const location = useLocation();
 
-  if (items.length === 0) return null;
+  if (items.length === 0 || location.pathname === "/compare") return null;
 
   return (
     <div className="fixed bottom-4 start-4 end-4 z-50 mx-auto max-w-lg">
