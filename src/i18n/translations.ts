@@ -104,6 +104,9 @@ export const translations = {
     brandTagline: "Your Packaging Marketplace",
     heroTitle: "Find Quality Packaging Products",
     heroSubtitle: "Explore a marketplace of plastic and packaging products from verified suppliers. Compare options and discover eco-friendly packaging solutions in one place",
+    becomeSellerTitle: "Start Selling on Plasticart",
+    becomeSellerSubtitle: "Join our marketplace and reach thousands of buyers looking for packaging products. Easy setup, powerful tools.",
+    becomeSellerCta: "Become a Seller",
     
     // Product
     price: "Price",
@@ -323,6 +326,9 @@ export const translations = {
     brandTagline: "سوقك للتغليف",
     heroTitle: "اعثر على منتجات تغليف عالية الجودة",
     heroSubtitle: "استكشف سوقًا لمنتجات البلاستيك والتغليف من موردين معتمدين. قارن الخيارات واكتشف حلول التغليف الصديقة للبيئة في مكان واحد",
+    becomeSellerTitle: "ابدأ البيع على بلاستيكارت",
+    becomeSellerSubtitle: "انضم إلى سوقنا وتواصل مع آلاف المشترين الباحثين عن منتجات التغليف. إعداد سهل وأدوات قوية.",
+    becomeSellerCta: "كن بائعًا",
     
     // Product
     price: "السعر",
