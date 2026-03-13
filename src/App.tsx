@@ -62,6 +62,8 @@ const App = () => (
                   <Route path="/seller/products/:id/edit" element={<ProductForm />} />
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/seller/:sellerId" element={<SellerProfile />} />
+                  <Route path="/recycle" element={<RecycleSubmit />} />
+                  <Route path="/rewards" element={<Rewards />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <CompareTray />
