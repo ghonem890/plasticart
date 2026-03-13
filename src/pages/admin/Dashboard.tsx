@@ -70,6 +70,21 @@ export default function AdminDashboard() {
       setOrders(oRes.data || []);
       setCategories(cRes.data || []);
       setCoupons(cpRes.data || []);
+
+      // Enrich recycling submissions with profile data
+      const recyclingData = rRes.data || [];
+      if (recyclingData.length > 0) {
+        const rUserIds = [...new Set(recyclingData.map((r: any) => r.user_id))];
+        const { data: rProfiles } = await supabase
+          .from("profiles")
+          .select("user_id, display_name, phone")
+          .in("user_id", rUserIds);
+        const rMap: Record<string, any> = {};
+        rProfiles?.forEach((p: any) => { rMap[p.user_id] = p; });
+        setRecyclingSubmissions(recyclingData.map((r: any) => ({ ...r, profile: rMap[r.user_id] || null })));
+      } else {
+        setRecyclingSubmissions([]);
+      }
       setLoading(false);
     };
     fetchData();
