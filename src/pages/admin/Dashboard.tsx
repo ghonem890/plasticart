@@ -306,7 +306,12 @@ export default function AdminDashboard() {
                 <Button onClick={addCoupon} className="mt-2 w-full sm:w-auto">Add</Button>
               </CardContent>
             </Card>
-            {coupons.map((c) => (
+            <div className="flex gap-2">
+              <Button variant={couponFilter === "all" ? "default" : "outline"} size="sm" onClick={() => setCouponFilter("all")}>{t("all")}</Button>
+              <Button variant={couponFilter === "admin" ? "default" : "outline"} size="sm" onClick={() => setCouponFilter("admin")}>{t("adminCreated")}</Button>
+              <Button variant={couponFilter === "user" ? "default" : "outline"} size="sm" onClick={() => setCouponFilter("user")}>{t("userRedeemed")}</Button>
+            </div>
+            {coupons.filter((c) => couponFilter === "all" ? true : couponFilter === "user" ? c.code.startsWith("RECYCLE-") : !c.code.startsWith("RECYCLE-")).map((c) => (
               <Card key={c.id}>
                 <CardContent className="p-4 flex items-center justify-between">
                   <div>
