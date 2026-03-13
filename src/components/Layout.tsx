@@ -146,20 +146,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link to="/catalog" onClick={() => setMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">{t("products")}</Button>
             </Link>
-            {user && (
+            {user && hasRole("buyer") && (
               <>
-                <Link to="/favorites" onClick={() => setMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start gap-2"><Heart className="h-4 w-4" />{t("favorites")}</Button>
-                </Link>
                 <Link to="/orders" onClick={() => setMenuOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start gap-2"><ShoppingBag className="h-4 w-4" />{t("myOrders")}</Button>
+                </Link>
+                <Link to="/favorites" onClick={() => setMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start gap-2"><Heart className="h-4 w-4" />{t("favorites")}</Button>
                 </Link>
               </>
             )}
             {user && hasRole("seller") && (
-              <Link to="/seller" onClick={() => setMenuOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start gap-2"><Store className="h-4 w-4" />{t("sellerDashboard")}</Button>
-              </Link>
+              <>
+                <Link to={`/seller/${user.id}`} onClick={() => setMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start gap-2"><User className="h-4 w-4" />{t("profile")}</Button>
+                </Link>
+                <Link to="/seller/products/new" onClick={() => setMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start gap-2"><Plus className="h-4 w-4" />{t("addNew")}</Button>
+                </Link>
+              </>
             )}
             {user && hasRole("admin") && (
               <Link to="/admin" onClick={() => setMenuOpen(false)}>
