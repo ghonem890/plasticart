@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Recycle, Gift, Coins, History, Plus } from "lucide-react";
+import { CouponCelebration } from "@/components/CouponCelebration";
 
 const MIN_REDEEM = 50;
 
