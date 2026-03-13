@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Recycle, Gift, Coins, History, Plus } from "lucide-react";
+import { CouponCelebration } from "@/components/CouponCelebration";
 
 const MIN_REDEEM = 50;
 
@@ -23,6 +24,9 @@ export default function Rewards() {
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [redemptions, setRedemptions] = useState<any[]>([]);
   const [redeemAmount, setRedeemAmount] = useState("");
+  const [celebrationCode, setCelebrationCode] = useState("");
+  const [celebrationPoints, setCelebrationPoints] = useState(0);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   const fetchData = async () => {
     if (!user) return;
@@ -55,7 +59,7 @@ export default function Rewards() {
     }
 
     setRedeeming(true);
-    const { error } = await supabase.rpc("redeem_recycling_points" as any, {
+    const { data, error } = await supabase.rpc("redeem_recycling_points" as any, {
       _user_id: user.id,
       _points: amount,
     });
@@ -63,7 +67,10 @@ export default function Rewards() {
     if (error) {
       toast({ title: error.message, variant: "destructive" });
     } else {
-      toast({ title: t("redeemSuccess") });
+      const couponCode = (data as string) || "RECYCLE-??????";
+      setCelebrationCode(couponCode);
+      setCelebrationPoints(amount);
+      setShowCelebration(true);
       setRedeemAmount("");
       fetchData();
     }
@@ -221,6 +228,13 @@ export default function Rewards() {
           </CardContent>
         </Card>
       </div>
+
+      <CouponCelebration
+        open={showCelebration}
+        onClose={() => setShowCelebration(false)}
+        couponCode={celebrationCode}
+        pointsRedeemed={celebrationPoints}
+      />
     </Layout>
   );
 }
