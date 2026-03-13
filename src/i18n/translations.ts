@@ -247,6 +247,8 @@ export const translations = {
     orders: "الطلبات",
     myOrders: "طلباتي",
     categories: "الفئات",
+    profile: "الملف الشخصي",
+    addNew: "إضافة جديد",
     
     // Auth
     email: "البريد الإلكتروني",

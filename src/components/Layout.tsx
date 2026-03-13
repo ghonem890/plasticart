@@ -43,6 +43,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link to="/catalog">
               <Button variant={isActive("/catalog") ? "secondary" : "ghost"} size="sm">{t("products")}</Button>
             </Link>
+            {user && hasRole("buyer") && (
+              <>
+                <Link to="/orders">
+                  <Button variant={isActive("/orders") ? "secondary" : "ghost"} size="sm">{t("myOrders")}</Button>
+                </Link>
+                <Link to="/favorites">
+                  <Button variant={isActive("/favorites") ? "secondary" : "ghost"} size="sm">{t("favorites")}</Button>
+                </Link>
+              </>
+            )}
+            {user && hasRole("seller") && (
+              <>
+                <Link to={`/seller/${user.id}`}>
+                  <Button variant={location.pathname.startsWith("/seller/" + user.id) ? "secondary" : "ghost"} size="sm">{t("profile")}</Button>
+                </Link>
+                <Link to="/seller/products/new">
+                  <Button variant={isActive("/seller/products/new") ? "secondary" : "ghost"} size="sm">{t("addNew")}</Button>
+                </Link>
+              </>
+            )}
           </nav>
 
           <div className="flex items-center gap-1">
