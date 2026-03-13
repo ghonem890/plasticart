@@ -63,6 +63,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Link>
               </>
             )}
+            {user && hasRole("admin") && (
+              <Link to="/admin">
+                <Button variant={isActive("/admin") ? "secondary" : "ghost"} size="sm">{t("adminDashboard")}</Button>
+              </Link>
+            )}
           </nav>
 
           <div className="flex items-center gap-1">
