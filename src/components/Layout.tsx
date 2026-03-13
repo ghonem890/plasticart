@@ -165,6 +165,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Link to="/favorites" onClick={() => setMenuOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start gap-2"><Heart className="h-4 w-4" />{t("favorites")}</Button>
                 </Link>
+                <Link to="/recycle" onClick={() => setMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start gap-2"><Recycle className="h-4 w-4" />{t("recycle")}</Button>
+                </Link>
+                <Link to="/rewards" onClick={() => setMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start gap-2"><Gift className="h-4 w-4" />{t("rewards")}</Button>
+                </Link>
               </>
             )}
             {user && hasRole("seller") && (
