@@ -196,6 +196,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="orders" className="flex-1 text-xs sm:text-sm">{t("orders")}</TabsTrigger>
             <TabsTrigger value="categories" className="flex-1 text-xs sm:text-sm">{t("categories")}</TabsTrigger>
             <TabsTrigger value="coupons" className="flex-1 text-xs sm:text-sm">{t("couponManagement")}</TabsTrigger>
+            <TabsTrigger value="recycling" className="flex-1 text-xs sm:text-sm">
+              <Recycle className="h-4 w-4 me-1 hidden sm:inline" />
+              {t("recycling")} {pendingRecycling.length > 0 && `(${pendingRecycling.length})`}
+            </TabsTrigger>
           </TabsList>
 
           {/* Sellers */}
