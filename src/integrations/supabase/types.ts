@@ -440,6 +440,107 @@ export type Database = {
         }
         Relationships: []
       }
+      recycling_points: {
+        Row: {
+          balance: number
+          id: string
+          total_earned: number
+          total_redeemed: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          id?: string
+          total_earned?: number
+          total_redeemed?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          id?: string
+          total_earned?: number
+          total_redeemed?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recycling_redemptions: {
+        Row: {
+          coupon_id: string
+          created_at: string
+          id: string
+          points_redeemed: number
+          user_id: string
+        }
+        Insert: {
+          coupon_id: string
+          created_at?: string
+          id?: string
+          points_redeemed: number
+          user_id: string
+        }
+        Update: {
+          coupon_id?: string
+          created_at?: string
+          id?: string
+          points_redeemed?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recycling_redemptions_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recycling_submissions: {
+        Row: {
+          address: Json
+          created_at: string
+          id: string
+          mass_kg: number
+          notes: string | null
+          phone: string
+          points_earned: number
+          status: string
+          updated_at: string
+          user_id: string
+          verified_by: string | null
+        }
+        Insert: {
+          address?: Json
+          created_at?: string
+          id?: string
+          mass_kg: number
+          notes?: string | null
+          phone: string
+          points_earned: number
+          status?: string
+          updated_at?: string
+          user_id: string
+          verified_by?: string | null
+        }
+        Update: {
+          address?: Json
+          created_at?: string
+          id?: string
+          mass_kg?: number
+          notes?: string | null
+          phone?: string
+          points_earned?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           buyer_id: string
@@ -559,6 +660,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_recycling_submission: {
+        Args: { _admin_id: string; _submission_id: string }
+        Returns: undefined
+      }
       get_seller_order_ids: { Args: { _seller_id: string }; Returns: string[] }
       has_role: {
         Args: {
@@ -566,6 +671,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      redeem_recycling_points: {
+        Args: { _points: number; _user_id: string }
+        Returns: string
       }
     }
     Enums: {
