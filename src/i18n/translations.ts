@@ -260,6 +260,7 @@ export const translations = {
     minimumRedeem: "Minimum",
     insufficientPoints: "Insufficient points balance",
     redeemSuccess: "Points redeemed! Coupon created.",
+    done: "Done",
     redeemNow: "Redeem Now",
     youWillGet: "You will get",
     redemptionHistory: "Redemption History",
