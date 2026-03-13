@@ -67,8 +67,14 @@ export default function Rewards() {
     if (error) {
       toast({ title: error.message, variant: "destructive" });
     } else {
-      const couponCode = (data as string) || "RECYCLE-??????";
-      setCelebrationCode(couponCode);
+      // RPC returns coupon UUID, fetch the actual code
+      const couponId = data as string;
+      const { data: coupon } = await supabase
+        .from("coupons")
+        .select("code")
+        .eq("id", couponId)
+        .maybeSingle();
+      setCelebrationCode(coupon?.code || couponId);
       setCelebrationPoints(amount);
       setShowCelebration(true);
       setRedeemAmount("");
