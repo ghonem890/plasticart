@@ -13,6 +13,8 @@ export const translations = {
     orders: "Orders",
     myOrders: "My Orders",
     categories: "Categories",
+    profile: "Profile",
+    addNew: "Add New",
     
     // Auth
     email: "Email",
