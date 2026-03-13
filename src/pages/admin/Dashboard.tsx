@@ -70,7 +70,23 @@ export default function AdminDashboard() {
       setProducts(pRes.data || []);
       setOrders(oRes.data || []);
       setCategories(cRes.data || []);
-      setCoupons(cpRes.data || []);
+
+      // Enrich coupons with creator profile data
+      const couponsData = cpRes.data || [];
+      if (couponsData.length > 0) {
+        const creatorIds = [...new Set(couponsData.filter((c: any) => c.created_by).map((c: any) => c.created_by))];
+        let creatorMap: Record<string, any> = {};
+        if (creatorIds.length > 0) {
+          const { data: creatorProfiles } = await supabase
+            .from("profiles")
+            .select("user_id, display_name")
+            .in("user_id", creatorIds);
+          creatorProfiles?.forEach((p: any) => { creatorMap[p.user_id] = p; });
+        }
+        setCoupons(couponsData.map((c: any) => ({ ...c, creator_profile: creatorMap[c.created_by] || null })));
+      } else {
+        setCoupons([]);
+      }
 
       // Enrich recycling submissions with profile data
       const recyclingData = rRes.data || [];
@@ -152,7 +168,8 @@ export default function AdminDashboard() {
       discount_amount: parseFloat(newCoupon.discountAmount),
       max_uses: newCoupon.maxUses ? parseInt(newCoupon.maxUses) : null,
       min_order_amount: newCoupon.minOrderAmount ? parseFloat(newCoupon.minOrderAmount) : 0,
-    }).select().single();
+      created_by: user?.id,
+    } as any).select().single();
     if (error) { toast({ title: error.message, variant: "destructive" }); return; }
     setCoupons([data, ...coupons]);
     setNewCoupon({ code: "", discountType: "percentage", discountAmount: "", maxUses: "", minOrderAmount: "" });
@@ -315,11 +332,24 @@ export default function AdminDashboard() {
             {coupons.filter((c) => couponFilter === "all" ? true : couponFilter === "user" ? c.code.startsWith("RECYCLE-") : !c.code.startsWith("RECYCLE-")).map((c) => (
               <Card key={c.id}>
                 <CardContent className="p-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-mono font-medium">{c.code}</p>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-mono font-medium">{c.code}</p>
+                      <Badge variant={c.code.startsWith("RECYCLE-") ? "secondary" : "outline"}>
+                        {c.code.startsWith("RECYCLE-") ? t("userRedeemed") : t("adminCreated")}
+                      </Badge>
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       {c.discount_type === "percentage" ? `${c.discount_amount}%` : `${c.discount_amount} EGP`}
                       {c.max_uses && ` · ${c.used_count}/${c.max_uses} uses`}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {c.creator_profile?.display_name
+                        ? `${t("createdBy")}: ${c.creator_profile.display_name}`
+                        : c.created_by
+                        ? `${t("createdBy")}: ${c.created_by.slice(0, 8)}...`
+                        : ""}
+                      {c.created_at && ` · ${new Date(c.created_at).toLocaleDateString()}`}
                     </p>
                   </div>
                   <Button variant={c.is_active ? "destructive" : "default"} size="sm" onClick={() => toggleCoupon(c.id, c.is_active)}>

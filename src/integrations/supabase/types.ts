@@ -94,6 +94,7 @@ export type Database = {
         Row: {
           code: string
           created_at: string
+          created_by: string | null
           discount_amount: number
           discount_type: Database["public"]["Enums"]["discount_type"]
           expires_at: string | null
@@ -107,6 +108,7 @@ export type Database = {
         Insert: {
           code: string
           created_at?: string
+          created_by?: string | null
           discount_amount: number
           discount_type?: Database["public"]["Enums"]["discount_type"]
           expires_at?: string | null
@@ -120,6 +122,7 @@ export type Database = {
         Update: {
           code?: string
           created_at?: string
+          created_by?: string | null
           discount_amount?: number
           discount_type?: Database["public"]["Enums"]["discount_type"]
           expires_at?: string | null
