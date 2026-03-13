@@ -228,6 +228,13 @@ export default function Rewards() {
           </CardContent>
         </Card>
       </div>
+
+      <CouponCelebration
+        open={showCelebration}
+        onClose={() => setShowCelebration(false)}
+        couponCode={celebrationCode}
+        pointsRedeemed={celebrationPoints}
+      />
     </Layout>
   );
 }
