@@ -44,12 +44,13 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (!user || !hasRole("admin")) return;
     const fetchData = async () => {
-      const [sRes, pRes, oRes, cRes, cpRes] = await Promise.all([
+    const [sRes, pRes, oRes, cRes, cpRes, rRes] = await Promise.all([
         supabase.from("seller_profiles").select("*"),
         supabase.from("products").select("*, seller_profiles:seller_id(business_name)").order("created_at", { ascending: false }).limit(50),
         supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(50),
         supabase.from("categories").select("*").order("sort_order"),
         supabase.from("coupons").select("*").order("created_at", { ascending: false }),
+        supabase.from("recycling_submissions").select("*").order("created_at", { ascending: false }).limit(100),
       ]);
 
       const sellerData = sRes.data || [];
