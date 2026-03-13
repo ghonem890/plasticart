@@ -24,6 +24,9 @@ export default function Rewards() {
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [redemptions, setRedemptions] = useState<any[]>([]);
   const [redeemAmount, setRedeemAmount] = useState("");
+  const [celebrationCode, setCelebrationCode] = useState("");
+  const [celebrationPoints, setCelebrationPoints] = useState(0);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   const fetchData = async () => {
     if (!user) return;
