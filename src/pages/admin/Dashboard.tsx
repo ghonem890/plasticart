@@ -69,7 +69,29 @@ export default function AdminDashboard() {
       setProducts(pRes.data || []);
       setOrders(oRes.data || []);
       setCategories(cRes.data || []);
-      setCoupons(cpRes.data || []);
+      // Enrich coupons with redemption user data
+      const allCoupons = cpRes.data || [];
+      const userCouponIds = allCoupons.filter((c: any) => c.code?.startsWith("RECYCLE-")).map((c: any) => c.id);
+      let redemptionMap: Record<string, any> = {};
+      if (userCouponIds.length > 0) {
+        const { data: redemptions } = await supabase
+          .from("recycling_redemptions")
+          .select("coupon_id, user_id, created_at")
+          .in("coupon_id", userCouponIds);
+        if (redemptions && redemptions.length > 0) {
+          const rUserIds = [...new Set(redemptions.map((r: any) => r.user_id))];
+          const { data: rProfiles } = await supabase
+            .from("profiles")
+            .select("user_id, display_name")
+            .in("user_id", rUserIds);
+          const pMap: Record<string, string> = {};
+          rProfiles?.forEach((p: any) => { pMap[p.user_id] = p.display_name || "Unknown"; });
+          redemptions.forEach((r: any) => {
+            redemptionMap[r.coupon_id] = { user_name: pMap[r.user_id] || "Unknown", redeemed_at: r.created_at };
+          });
+        }
+      }
+      setCoupons(allCoupons.map((c: any) => ({ ...c, _redemption: redemptionMap[c.id] || null })));
 
       // Enrich recycling submissions with profile data
       const recyclingData = rRes.data || [];
