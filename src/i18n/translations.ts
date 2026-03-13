@@ -265,6 +265,8 @@ export const translations = {
     youWillGet: "You will get",
     redemptionHistory: "Redemption History",
     active: "Active",
+    adminCreated: "Admin Created",
+    userRedeemed: "User Redeemed",
     submissionHistory: "Submission History",
     noSubmissions: "No recycling submissions yet",
     recycle: "Recycle",
