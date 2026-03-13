@@ -203,6 +203,7 @@ export const translations = {
     commissionManagement: "Commission Management",
     orderOversight: "Order Oversight",
     couponManagement: "Coupon Management",
+    recycling: "Recycling",
     reports: "Reports",
     approve: "Approve",
     reject: "Reject",
