@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Package, LogIn, UserPlus, LogOut, ShoppingCart,
-  Heart, LayoutDashboard, Menu, X, User, ShoppingBag, Store, Plus
+  Heart, LayoutDashboard, Menu, X, User, ShoppingBag, Store, Plus, Recycle, Gift
 } from "lucide-react";
 import { useState } from "react";
 import { Footer } from "@/components/Footer";
