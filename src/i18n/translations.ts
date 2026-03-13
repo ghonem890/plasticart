@@ -13,6 +13,8 @@ export const translations = {
     orders: "Orders",
     myOrders: "My Orders",
     categories: "Categories",
+    profile: "Profile",
+    addNew: "Add New",
     
     // Auth
     email: "Email",
@@ -245,6 +247,8 @@ export const translations = {
     orders: "الطلبات",
     myOrders: "طلباتي",
     categories: "الفئات",
+    profile: "الملف الشخصي",
+    addNew: "إضافة جديد",
     
     // Auth
     email: "البريد الإلكتروني",

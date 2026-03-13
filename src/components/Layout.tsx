@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Package, LogIn, UserPlus, LogOut, ShoppingCart,
-  Heart, LayoutDashboard, Menu, X, User, ShoppingBag, Store
+  Heart, LayoutDashboard, Menu, X, User, ShoppingBag, Store, Plus
 } from "lucide-react";
 import { useState } from "react";
 import { Footer } from "@/components/Footer";
@@ -43,6 +43,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link to="/catalog">
               <Button variant={isActive("/catalog") ? "secondary" : "ghost"} size="sm">{t("products")}</Button>
             </Link>
+            {user && hasRole("buyer") && (
+              <>
+                <Link to="/orders">
+                  <Button variant={isActive("/orders") ? "secondary" : "ghost"} size="sm">{t("myOrders")}</Button>
+                </Link>
+                <Link to="/favorites">
+                  <Button variant={isActive("/favorites") ? "secondary" : "ghost"} size="sm">{t("favorites")}</Button>
+                </Link>
+              </>
+            )}
+            {user && hasRole("seller") && (
+              <>
+                <Link to={`/seller/${user.id}`}>
+                  <Button variant={location.pathname.startsWith("/seller/" + user.id) ? "secondary" : "ghost"} size="sm">{t("profile")}</Button>
+                </Link>
+                <Link to="/seller/products/new">
+                  <Button variant={isActive("/seller/products/new") ? "secondary" : "ghost"} size="sm">{t("addNew")}</Button>
+                </Link>
+              </>
+            )}
           </nav>
 
           <div className="flex items-center gap-1">
@@ -126,20 +146,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link to="/catalog" onClick={() => setMenuOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">{t("products")}</Button>
             </Link>
-            {user && (
+            {user && hasRole("buyer") && (
               <>
-                <Link to="/favorites" onClick={() => setMenuOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start gap-2"><Heart className="h-4 w-4" />{t("favorites")}</Button>
-                </Link>
                 <Link to="/orders" onClick={() => setMenuOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start gap-2"><ShoppingBag className="h-4 w-4" />{t("myOrders")}</Button>
+                </Link>
+                <Link to="/favorites" onClick={() => setMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start gap-2"><Heart className="h-4 w-4" />{t("favorites")}</Button>
                 </Link>
               </>
             )}
             {user && hasRole("seller") && (
-              <Link to="/seller" onClick={() => setMenuOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start gap-2"><Store className="h-4 w-4" />{t("sellerDashboard")}</Button>
-              </Link>
+              <>
+                <Link to={`/seller/${user.id}`} onClick={() => setMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start gap-2"><User className="h-4 w-4" />{t("profile")}</Button>
+                </Link>
+                <Link to="/seller/products/new" onClick={() => setMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start gap-2"><Plus className="h-4 w-4" />{t("addNew")}</Button>
+                </Link>
+              </>
             )}
             {user && hasRole("admin") && (
               <Link to="/admin" onClick={() => setMenuOpen(false)}>
