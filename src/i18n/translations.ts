@@ -531,6 +531,7 @@ export const translations = {
     minimumRedeem: "الحد الأدنى",
     insufficientPoints: "رصيد النقاط غير كافٍ",
     redeemSuccess: "تم استبدال النقاط! تم إنشاء الكوبون.",
+    done: "تم",
     redeemNow: "استبدل الآن",
     youWillGet: "ستحصل على",
     redemptionHistory: "سجل الاستبدال",

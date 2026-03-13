@@ -59,7 +59,7 @@ export default function Rewards() {
     }
 
     setRedeeming(true);
-    const { error } = await supabase.rpc("redeem_recycling_points" as any, {
+    const { data, error } = await supabase.rpc("redeem_recycling_points" as any, {
       _user_id: user.id,
       _points: amount,
     });
@@ -67,7 +67,10 @@ export default function Rewards() {
     if (error) {
       toast({ title: error.message, variant: "destructive" });
     } else {
-      toast({ title: t("redeemSuccess") });
+      const couponCode = (data as string) || "RECYCLE-??????";
+      setCelebrationCode(couponCode);
+      setCelebrationPoints(amount);
+      setShowCelebration(true);
       setRedeemAmount("");
       fetchData();
     }
