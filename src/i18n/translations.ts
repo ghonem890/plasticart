@@ -538,6 +538,8 @@ export const translations = {
     youWillGet: "ستحصل على",
     redemptionHistory: "سجل الاستبدال",
     active: "نشط",
+    adminCreated: "أنشأها المسؤول",
+    userRedeemed: "استبدال المستخدم",
     submissionHistory: "سجل التقديمات",
     noSubmissions: "لا توجد طلبات تدوير بعد",
     recycle: "إعادة تدوير",
