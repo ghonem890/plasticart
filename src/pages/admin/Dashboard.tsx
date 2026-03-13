@@ -70,7 +70,23 @@ export default function AdminDashboard() {
       setProducts(pRes.data || []);
       setOrders(oRes.data || []);
       setCategories(cRes.data || []);
-      setCoupons(cpRes.data || []);
+
+      // Enrich coupons with creator profile data
+      const couponsData = cpRes.data || [];
+      if (couponsData.length > 0) {
+        const creatorIds = [...new Set(couponsData.filter((c: any) => c.created_by).map((c: any) => c.created_by))];
+        let creatorMap: Record<string, any> = {};
+        if (creatorIds.length > 0) {
+          const { data: creatorProfiles } = await supabase
+            .from("profiles")
+            .select("user_id, display_name")
+            .in("user_id", creatorIds);
+          creatorProfiles?.forEach((p: any) => { creatorMap[p.user_id] = p; });
+        }
+        setCoupons(couponsData.map((c: any) => ({ ...c, creator_profile: creatorMap[c.created_by] || null })));
+      } else {
+        setCoupons([]);
+      }
 
       // Enrich recycling submissions with profile data
       const recyclingData = rRes.data || [];
