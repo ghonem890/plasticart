@@ -31,6 +31,7 @@ export default function AdminDashboard() {
   const [sellerDialogOpen, setSellerDialogOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [orderDialogOpen, setOrderDialogOpen] = useState(false);
+  const [couponFilter, setCouponFilter] = useState<"all" | "admin" | "user">("all");
   
   // New/edit category form
   const [newCatEn, setNewCatEn] = useState("");
