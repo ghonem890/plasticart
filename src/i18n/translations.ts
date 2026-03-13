@@ -267,6 +267,7 @@ export const translations = {
     active: "Active",
     adminCreated: "Admin Created",
     userRedeemed: "User Redeemed",
+    createdBy: "Created by",
     submissionHistory: "Submission History",
     noSubmissions: "No recycling submissions yet",
     recycle: "Recycle",
