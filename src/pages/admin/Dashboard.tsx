@@ -323,6 +323,17 @@ export default function AdminDashboard() {
               </Card>
             ))}
           </TabsContent>
+          {/* Recycling */}
+          <TabsContent value="recycling">
+            <RecyclingTab
+              submissions={recyclingSubmissions}
+              onUpdate={(id, status) =>
+                setRecyclingSubmissions((prev) =>
+                  prev.map((s: any) => (s.id === id ? { ...s, status } : s))
+                )
+              }
+            />
+          </TabsContent>
         </Tabs>
       </div>
 
