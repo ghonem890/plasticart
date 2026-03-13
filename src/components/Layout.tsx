@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Package, LogIn, UserPlus, LogOut, ShoppingCart,
-  Heart, LayoutDashboard, Menu, X, User, ShoppingBag, Store, Plus
+  Heart, LayoutDashboard, Menu, X, User, ShoppingBag, Store, Plus, Recycle, Gift
 } from "lucide-react";
 import { useState } from "react";
 import { Footer } from "@/components/Footer";
@@ -50,6 +50,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Link>
                 <Link to="/favorites">
                   <Button variant={isActive("/favorites") ? "secondary" : "ghost"} size="sm">{t("favorites")}</Button>
+                </Link>
+                <Link to="/recycle">
+                  <Button variant={isActive("/recycle") ? "secondary" : "ghost"} size="sm">{t("recycle")}</Button>
+                </Link>
+                <Link to="/rewards">
+                  <Button variant={isActive("/rewards") ? "secondary" : "ghost"} size="sm">{t("rewards")}</Button>
                 </Link>
               </>
             )}
@@ -158,6 +164,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 </Link>
                 <Link to="/favorites" onClick={() => setMenuOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start gap-2"><Heart className="h-4 w-4" />{t("favorites")}</Button>
+                </Link>
+                <Link to="/recycle" onClick={() => setMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start gap-2"><Recycle className="h-4 w-4" />{t("recycle")}</Button>
+                </Link>
+                <Link to="/rewards" onClick={() => setMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start gap-2"><Gift className="h-4 w-4" />{t("rewards")}</Button>
                 </Link>
               </>
             )}

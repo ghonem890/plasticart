@@ -26,6 +26,8 @@ import SellerDashboard from "./pages/seller/Dashboard";
 import ProductForm from "./pages/seller/ProductForm";
 import AdminDashboard from "./pages/admin/Dashboard";
 import SellerProfile from "./pages/SellerProfile";
+import RecycleSubmit from "./pages/RecycleSubmit";
+import Rewards from "./pages/Rewards";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -60,6 +62,8 @@ const App = () => (
                   <Route path="/seller/products/:id/edit" element={<ProductForm />} />
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/seller/:sellerId" element={<SellerProfile />} />
+                  <Route path="/recycle" element={<RecycleSubmit />} />
+                  <Route path="/rewards" element={<Rewards />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <CompareTray />
