@@ -541,6 +541,7 @@ export const translations = {
     active: "نشط",
     adminCreated: "أنشأها المسؤول",
     userRedeemed: "استبدال المستخدم",
+    createdBy: "أنشأها",
     submissionHistory: "سجل التقديمات",
     noSubmissions: "لا توجد طلبات تدوير بعد",
     recycle: "إعادة تدوير",
