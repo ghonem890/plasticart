@@ -168,7 +168,8 @@ export default function AdminDashboard() {
       discount_amount: parseFloat(newCoupon.discountAmount),
       max_uses: newCoupon.maxUses ? parseInt(newCoupon.maxUses) : null,
       min_order_amount: newCoupon.minOrderAmount ? parseFloat(newCoupon.minOrderAmount) : 0,
-    }).select().single();
+      created_by: user?.id,
+    } as any).select().single();
     if (error) { toast({ title: error.message, variant: "destructive" }); return; }
     setCoupons([data, ...coupons]);
     setNewCoupon({ code: "", discountType: "percentage", discountAmount: "", maxUses: "", minOrderAmount: "" });
