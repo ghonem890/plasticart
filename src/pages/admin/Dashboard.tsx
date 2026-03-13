@@ -11,9 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Package, ShoppingCart, DollarSign, CheckCircle, XCircle, Shield, Eye, Pencil } from "lucide-react";
+import { Users, Package, ShoppingCart, DollarSign, CheckCircle, XCircle, Shield, Eye, Pencil, Recycle } from "lucide-react";
 import { SellerDetailDialog } from "@/components/admin/SellerDetailDialog";
 import { OrderDetailDialog } from "@/components/OrderDetailDialog";
+import { RecyclingTab } from "@/components/admin/RecyclingTab";
 
 export default function AdminDashboard() {
   const { t, language } = useLanguage();
