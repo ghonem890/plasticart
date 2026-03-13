@@ -51,6 +51,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <Link to="/favorites">
                   <Button variant={isActive("/favorites") ? "secondary" : "ghost"} size="sm">{t("favorites")}</Button>
                 </Link>
+                <Link to="/recycle">
+                  <Button variant={isActive("/recycle") ? "secondary" : "ghost"} size="sm">{t("recycle")}</Button>
+                </Link>
+                <Link to="/rewards">
+                  <Button variant={isActive("/rewards") ? "secondary" : "ghost"} size="sm">{t("rewards")}</Button>
+                </Link>
               </>
             )}
             {user && hasRole("seller") && (
