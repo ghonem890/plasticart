@@ -95,6 +95,7 @@ export default function AdminDashboard() {
   }
 
   const pendingSellers = sellers.filter((s) => s.verification_status === "pending");
+  const pendingRecycling = recyclingSubmissions.filter((s: any) => s.status === "pending");
   const totalRevenue = orders.filter((o) => o.status === "completed").reduce((s, o) => s + Number(o.total), 0);
 
   const updateSellerStatus = async (sellerId: string, status: "approved" | "rejected") => {
