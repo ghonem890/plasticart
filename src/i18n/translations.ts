@@ -473,6 +473,7 @@ export const translations = {
     commissionManagement: "إدارة العمولات",
     orderOversight: "مراقبة الطلبات",
     couponManagement: "إدارة الكوبونات",
+    recycling: "إعادة التدوير",
     reports: "التقارير",
     approve: "موافقة",
     reject: "رفض",
