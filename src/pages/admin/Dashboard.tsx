@@ -11,9 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Package, ShoppingCart, DollarSign, CheckCircle, XCircle, Shield, Eye, Pencil } from "lucide-react";
+import { Users, Package, ShoppingCart, DollarSign, CheckCircle, XCircle, Shield, Eye, Pencil, Recycle } from "lucide-react";
 import { SellerDetailDialog } from "@/components/admin/SellerDetailDialog";
 import { OrderDetailDialog } from "@/components/OrderDetailDialog";
+import { RecyclingTab } from "@/components/admin/RecyclingTab";
 
 export default function AdminDashboard() {
   const { t, language } = useLanguage();
@@ -24,6 +25,7 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [coupons, setCoupons] = useState<any[]>([]);
+  const [recyclingSubmissions, setRecyclingSubmissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSeller, setSelectedSeller] = useState<any>(null);
   const [sellerDialogOpen, setSellerDialogOpen] = useState(false);
@@ -42,12 +44,13 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (!user || !hasRole("admin")) return;
     const fetchData = async () => {
-      const [sRes, pRes, oRes, cRes, cpRes] = await Promise.all([
+    const [sRes, pRes, oRes, cRes, cpRes, rRes] = await Promise.all([
         supabase.from("seller_profiles").select("*"),
         supabase.from("products").select("*, seller_profiles:seller_id(business_name)").order("created_at", { ascending: false }).limit(50),
         supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(50),
         supabase.from("categories").select("*").order("sort_order"),
         supabase.from("coupons").select("*").order("created_at", { ascending: false }),
+        supabase.from("recycling_submissions").select("*").order("created_at", { ascending: false }).limit(100),
       ]);
 
       const sellerData = sRes.data || [];
@@ -67,6 +70,21 @@ export default function AdminDashboard() {
       setOrders(oRes.data || []);
       setCategories(cRes.data || []);
       setCoupons(cpRes.data || []);
+
+      // Enrich recycling submissions with profile data
+      const recyclingData = rRes.data || [];
+      if (recyclingData.length > 0) {
+        const rUserIds = [...new Set(recyclingData.map((r: any) => r.user_id))];
+        const { data: rProfiles } = await supabase
+          .from("profiles")
+          .select("user_id, display_name, phone")
+          .in("user_id", rUserIds);
+        const rMap: Record<string, any> = {};
+        rProfiles?.forEach((p: any) => { rMap[p.user_id] = p; });
+        setRecyclingSubmissions(recyclingData.map((r: any) => ({ ...r, profile: rMap[r.user_id] || null })));
+      } else {
+        setRecyclingSubmissions([]);
+      }
       setLoading(false);
     };
     fetchData();
@@ -77,6 +95,7 @@ export default function AdminDashboard() {
   }
 
   const pendingSellers = sellers.filter((s) => s.verification_status === "pending");
+  const pendingRecycling = recyclingSubmissions.filter((s: any) => s.status === "pending");
   const totalRevenue = orders.filter((o) => o.status === "completed").reduce((s, o) => s + Number(o.total), 0);
 
   const updateSellerStatus = async (sellerId: string, status: "approved" | "rejected") => {
@@ -177,6 +196,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="orders" className="flex-1 text-xs sm:text-sm">{t("orders")}</TabsTrigger>
             <TabsTrigger value="categories" className="flex-1 text-xs sm:text-sm">{t("categories")}</TabsTrigger>
             <TabsTrigger value="coupons" className="flex-1 text-xs sm:text-sm">{t("couponManagement")}</TabsTrigger>
+            <TabsTrigger value="recycling" className="flex-1 text-xs sm:text-sm">
+              <Recycle className="h-4 w-4 me-1 hidden sm:inline" />
+              {t("recycling")} {pendingRecycling.length > 0 && `(${pendingRecycling.length})`}
+            </TabsTrigger>
           </TabsList>
 
           {/* Sellers */}
@@ -299,6 +322,17 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             ))}
+          </TabsContent>
+          {/* Recycling */}
+          <TabsContent value="recycling">
+            <RecyclingTab
+              submissions={recyclingSubmissions}
+              onUpdate={(id, status) =>
+                setRecyclingSubmissions((prev) =>
+                  prev.map((s: any) => (s.id === id ? { ...s, status } : s))
+                )
+              }
+            />
           </TabsContent>
         </Tabs>
       </div>
