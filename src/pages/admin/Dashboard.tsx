@@ -69,29 +69,7 @@ export default function AdminDashboard() {
       setProducts(pRes.data || []);
       setOrders(oRes.data || []);
       setCategories(cRes.data || []);
-      // Enrich coupons with redemption user data
-      const allCoupons = cpRes.data || [];
-      const userCouponIds = allCoupons.filter((c: any) => c.code?.startsWith("RECYCLE-")).map((c: any) => c.id);
-      let redemptionMap: Record<string, any> = {};
-      if (userCouponIds.length > 0) {
-        const { data: redemptions } = await supabase
-          .from("recycling_redemptions")
-          .select("coupon_id, user_id, created_at")
-          .in("coupon_id", userCouponIds);
-        if (redemptions && redemptions.length > 0) {
-          const rUserIds = [...new Set(redemptions.map((r: any) => r.user_id))];
-          const { data: rProfiles } = await supabase
-            .from("profiles")
-            .select("user_id, display_name")
-            .in("user_id", rUserIds);
-          const pMap: Record<string, string> = {};
-          rProfiles?.forEach((p: any) => { pMap[p.user_id] = p.display_name || "Unknown"; });
-          redemptions.forEach((r: any) => {
-            redemptionMap[r.coupon_id] = { user_name: pMap[r.user_id] || "Unknown", redeemed_at: r.created_at };
-          });
-        }
-      }
-      setCoupons(allCoupons.map((c: any) => ({ ...c, _redemption: redemptionMap[c.id] || null })));
+      setCoupons(cpRes.data || []);
 
       // Enrich recycling submissions with profile data
       const recyclingData = rRes.data || [];
@@ -311,72 +289,39 @@ export default function AdminDashboard() {
           </TabsContent>
 
           {/* Coupons */}
-          <TabsContent value="coupons" className="space-y-6">
-            {/* Admin Coupons Section */}
-            <div>
-              <h3 className="text-lg font-semibold mb-3">{t("adminCoupons") || "Admin Coupons"}</h3>
-              <Card className="mb-4">
-                <CardContent className="p-4 space-y-3">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 items-end">
-                    <div className="space-y-1"><Label>Code</Label><Input value={newCoupon.code} onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })} /></div>
-                    <div className="space-y-1"><Label>Type</Label>
-                      <Select value={newCoupon.discountType} onValueChange={(v: "percentage" | "fixed") => setNewCoupon({ ...newCoupon, discountType: v })}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent><SelectItem value="percentage">%</SelectItem><SelectItem value="fixed">Fixed</SelectItem></SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-1"><Label>Amount</Label><Input type="number" value={newCoupon.discountAmount} onChange={(e) => setNewCoupon({ ...newCoupon, discountAmount: e.target.value })} /></div>
-                    <div className="space-y-1"><Label>Max Uses</Label><Input type="number" value={newCoupon.maxUses} onChange={(e) => setNewCoupon({ ...newCoupon, maxUses: e.target.value })} /></div>
+          <TabsContent value="coupons" className="space-y-4">
+            <Card>
+              <CardContent className="p-4 space-y-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 items-end">
+                  <div className="space-y-1"><Label>Code</Label><Input value={newCoupon.code} onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value })} /></div>
+                  <div className="space-y-1"><Label>Type</Label>
+                    <Select value={newCoupon.discountType} onValueChange={(v: "percentage" | "fixed") => setNewCoupon({ ...newCoupon, discountType: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent><SelectItem value="percentage">%</SelectItem><SelectItem value="fixed">Fixed</SelectItem></SelectContent>
+                    </Select>
                   </div>
-                  <Button onClick={addCoupon} className="mt-2 w-full sm:w-auto">Add</Button>
+                  <div className="space-y-1"><Label>Amount</Label><Input type="number" value={newCoupon.discountAmount} onChange={(e) => setNewCoupon({ ...newCoupon, discountAmount: e.target.value })} /></div>
+                  <div className="space-y-1"><Label>Max Uses</Label><Input type="number" value={newCoupon.maxUses} onChange={(e) => setNewCoupon({ ...newCoupon, maxUses: e.target.value })} /></div>
+                </div>
+                <Button onClick={addCoupon} className="mt-2 w-full sm:w-auto">Add</Button>
+              </CardContent>
+            </Card>
+            {coupons.map((c) => (
+              <Card key={c.id}>
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div>
+                    <p className="font-mono font-medium">{c.code}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {c.discount_type === "percentage" ? `${c.discount_amount}%` : `${c.discount_amount} EGP`}
+                      {c.max_uses && ` · ${c.used_count}/${c.max_uses} uses`}
+                    </p>
+                  </div>
+                  <Button variant={c.is_active ? "destructive" : "default"} size="sm" onClick={() => toggleCoupon(c.id, c.is_active)}>
+                    {c.is_active ? t("disable") : t("enable")}
+                  </Button>
                 </CardContent>
               </Card>
-              {coupons.filter((c) => !c.code?.startsWith("RECYCLE-")).map((c) => (
-                <Card key={c.id} className="mb-2">
-                  <CardContent className="p-4 flex items-center justify-between">
-                    <div>
-                      <p className="font-mono font-medium">{c.code}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {c.discount_type === "percentage" ? `${c.discount_amount}%` : `${c.discount_amount} EGP`}
-                        {c.max_uses && ` · ${c.used_count}/${c.max_uses} uses`}
-                      </p>
-                    </div>
-                    <Button variant={c.is_active ? "destructive" : "default"} size="sm" onClick={() => toggleCoupon(c.id, c.is_active)}>
-                      {c.is_active ? t("disable") : t("enable")}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-              {coupons.filter((c) => !c.code?.startsWith("RECYCLE-")).length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4">{t("noCoupons") || "No admin coupons yet"}</p>
-              )}
-            </div>
-
-            {/* User (Recycling) Coupons Section */}
-            <div>
-              <h3 className="text-lg font-semibold mb-3">{t("userCoupons") || "User Recycling Coupons"}</h3>
-              {coupons.filter((c) => c.code?.startsWith("RECYCLE-")).map((c) => (
-                <Card key={c.id} className="mb-2">
-                  <CardContent className="p-4 flex items-center justify-between">
-                    <div>
-                      <p className="font-mono font-medium">{c.code}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {c.discount_type === "percentage" ? `${c.discount_amount}%` : `${c.discount_amount} EGP`}
-                        {c._redemption && (
-                          <span> · {t("createdBy") || "by"} <span className="font-medium text-foreground">{c._redemption.user_name}</span> · {new Date(c._redemption.redeemed_at).toLocaleDateString()}</span>
-                        )}
-                      </p>
-                    </div>
-                    <Button variant={c.is_active ? "destructive" : "default"} size="sm" onClick={() => toggleCoupon(c.id, c.is_active)}>
-                      {c.is_active ? t("disable") : t("enable")}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-              {coupons.filter((c) => c.code?.startsWith("RECYCLE-")).length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4">{t("noCoupons") || "No user coupons yet"}</p>
-              )}
-            </div>
+            ))}
           </TabsContent>
           {/* Recycling */}
           <TabsContent value="recycling">
