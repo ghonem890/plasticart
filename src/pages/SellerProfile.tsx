@@ -6,7 +6,7 @@ import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Store, Star, Package } from "lucide-react";
+import { Store, Star, Package, Leaf, RefreshCw } from "lucide-react";
 
 export default function SellerProfile() {
   const { sellerId } = useParams<{ sellerId: string }>();
