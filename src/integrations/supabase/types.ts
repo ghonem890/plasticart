@@ -355,6 +355,7 @@ export type Database = {
           description_ar: string | null
           description_en: string | null
           id: string
+          is_recyclable: boolean
           min_order_qty: number
           price: number
           seller_id: string
@@ -372,6 +373,7 @@ export type Database = {
           description_ar?: string | null
           description_en?: string | null
           id?: string
+          is_recyclable?: boolean
           min_order_qty?: number
           price: number
           seller_id: string
@@ -389,6 +391,7 @@ export type Database = {
           description_ar?: string | null
           description_en?: string | null
           id?: string
+          is_recyclable?: boolean
           min_order_qty?: number
           price?: number
           seller_id?: string
