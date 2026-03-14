@@ -66,10 +66,28 @@ export default function SellerProfile() {
             <div className="flex-1 space-y-2">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-2xl font-bold">{businessName}</h1>
-                <Badge variant={seller.verification_status === "approved" ? "default" : "secondary"}>
-                  {seller.verification_status === "approved" ? t("verificationApproved") : t("verificationPending")}
-                </Badge>
-              </div>
+                 <Badge variant={seller.verification_status === "approved" ? "default" : "secondary"}>
+                   {seller.verification_status === "approved" ? t("verificationApproved") : t("verificationPending")}
+                 </Badge>
+                 {ecoTier === 1 && (
+                   <Badge className="bg-green-600 text-white border-green-600 hover:bg-green-700">
+                     <Leaf className="h-3 w-3 me-1" />
+                     {t("tier1EcoFriendly")}
+                   </Badge>
+                 )}
+                 {ecoTier === 2 && (
+                   <Badge className="bg-yellow-500 text-white border-yellow-500 hover:bg-yellow-600">
+                     <RefreshCw className="h-3 w-3 me-1" />
+                     {t("tier2EcoFriendly")}
+                   </Badge>
+                 )}
+                 {ecoTier === 3 && (
+                   <Badge className="bg-gray-400 text-white border-gray-400 hover:bg-gray-500">
+                     <RefreshCw className="h-3 w-3 me-1" />
+                     {t("tier3EcoFriendly")}
+                   </Badge>
+                 )}
+               </div>
               {description && <p className="text-muted-foreground">{description}</p>}
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 {avgRating > 0 && (

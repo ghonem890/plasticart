@@ -170,6 +170,10 @@ export default function ProductForm() {
                   <Label>{t("productTags")}</Label>
                   <Input value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="tag1, tag2, tag3" />
                 </div>
+                <div className="flex items-center justify-between rounded-lg border p-4">
+                  <Label htmlFor="recyclable-switch" className="cursor-pointer">{t("isRecyclable")}</Label>
+                  <Switch id="recyclable-switch" checked={form.isRecyclable} onCheckedChange={(v) => setForm({ ...form, isRecyclable: v })} />
+                </div>
               </CardContent>
             </Card>
 

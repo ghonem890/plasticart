@@ -550,6 +550,10 @@ export const translations = {
     noSubmissions: "لا توجد طلبات تدوير بعد",
     recycle: "إعادة تدوير",
     rewards: "المكافآت",
+    isRecyclable: "هل هذا المنتج قابل لإعادة التدوير؟",
+    tier1EcoFriendly: "المستوى 1 صديق للبيئة",
+    tier2EcoFriendly: "المستوى 2 صديق للبيئة",
+    tier3EcoFriendly: "المستوى 3 صديق للبيئة",
   },
 } as const;
 
