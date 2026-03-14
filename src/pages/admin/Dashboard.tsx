@@ -209,12 +209,12 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="sellers">
-          <TabsList className="mb-4 w-full flex overflow-x-auto overflow-y-hidden scrollbar-hide h-auto flex-wrap gap-1">
-            <TabsTrigger value="sellers" className="text-xs sm:text-sm whitespace-nowrap">{t("sellerVerification")} {pendingSellers.length > 0 && `(${pendingSellers.length})`}</TabsTrigger>
-            <TabsTrigger value="orders" className="text-xs sm:text-sm whitespace-nowrap">{t("orders")}</TabsTrigger>
-            <TabsTrigger value="categories" className="text-xs sm:text-sm whitespace-nowrap">{t("categories")}</TabsTrigger>
-            <TabsTrigger value="coupons" className="text-xs sm:text-sm whitespace-nowrap">{t("couponManagement")}</TabsTrigger>
-            <TabsTrigger value="recycling" className="text-xs sm:text-sm whitespace-nowrap">
+          <TabsList className="mb-4 w-full flex overflow-x-auto overflow-y-hidden scrollbar-hide">
+            <TabsTrigger value="sellers" className="flex-1 text-xs sm:text-sm">{t("sellerVerification")} {pendingSellers.length > 0 && `(${pendingSellers.length})`}</TabsTrigger>
+            <TabsTrigger value="orders" className="flex-1 text-xs sm:text-sm">{t("orders")}</TabsTrigger>
+            <TabsTrigger value="categories" className="flex-1 text-xs sm:text-sm">{t("categories")}</TabsTrigger>
+            <TabsTrigger value="coupons" className="flex-1 text-xs sm:text-sm">{t("couponManagement")}</TabsTrigger>
+            <TabsTrigger value="recycling" className="flex-1 text-xs sm:text-sm">
               <Recycle className="h-4 w-4 me-1 hidden sm:inline" />
               {t("recycling")} {pendingRecycling.length > 0 && `(${pendingRecycling.length})`}
             </TabsTrigger>
