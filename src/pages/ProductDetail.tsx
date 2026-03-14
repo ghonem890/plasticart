@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { ShoppingCart, Heart, GitCompareArrows, Star, Minus, Plus, Store, Package, MessageSquarePlus } from "lucide-react";
+import { ShoppingCart, Heart, GitCompareArrows, Star, Minus, Plus, Store, Package, MessageSquarePlus, Leaf } from "lucide-react";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -216,6 +216,18 @@ export default function ProductDetail() {
               </Button>
             </div>
 
+            {/* Recyclable indicator */}
+            {product.is_recyclable && (
+              <div className="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/40 p-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-600 text-white">
+                  <Leaf className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-semibold text-green-800 dark:text-green-300">{language === "ar" ? "منتج قابل لإعادة التدوير" : "Recyclable Product"}</p>
+                  <p className="text-sm text-green-700 dark:text-green-400">{language === "ar" ? "هذا المنتج مصنوع من مواد قابلة لإعادة التدوير" : "This product is made from recyclable materials"}</p>
+                </div>
+              </div>
+            )}
 
             {/* Specs */}
             {product.specs && Object.keys(product.specs).length > 0 && (
