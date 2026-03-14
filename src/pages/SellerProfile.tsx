@@ -49,6 +49,11 @@ export default function SellerProfile() {
   const businessName = language === "ar" && seller.business_name_ar ? seller.business_name_ar : seller.business_name;
   const description = language === "ar" && seller.description_ar ? seller.description_ar : seller.description;
 
+  // Eco badge logic
+  const recyclableCount = products.filter((p: any) => p.is_recyclable).length;
+  const recyclablePct = products.length > 0 ? (recyclableCount / products.length) * 100 : 0;
+  const ecoTier = products.length > 0 ? (recyclablePct >= 75 ? 1 : recyclablePct >= 50 ? 2 : 3) : null;
+
   return (
     <Layout>
       <div className="container py-8 space-y-8">
