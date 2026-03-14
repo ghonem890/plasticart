@@ -28,6 +28,7 @@ export default function ProductForm() {
   const [form, setForm] = useState({
     titleEn: "", titleAr: "", descriptionEn: "", descriptionAr: "",
     price: "", minOrderQty: "1", stock: "0", categoryId: "", tags: "",
+    isRecyclable: false,
   });
 
   useEffect(() => {
