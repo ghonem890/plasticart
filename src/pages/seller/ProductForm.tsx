@@ -68,6 +68,7 @@ export default function ProductForm() {
         stock: parseInt(form.stock),
         category_id: form.categoryId || null,
         tags: form.tags ? form.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
+        is_recyclable: form.isRecyclable,
       };
 
       let productId = id;
