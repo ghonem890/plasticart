@@ -209,7 +209,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="sellers">
-          <TabsList className="mb-4 w-full flex overflow-x-auto overflow-y-hidden scrollbar-hide">
+          <TabsList className="mb-4 w-full justify-start overflow-x-auto overflow-y-hidden scrollbar-hide">
             <TabsTrigger value="sellers" className="shrink-0 text-xs sm:text-sm">{t("sellerVerification")} {pendingSellers.length > 0 && `(${pendingSellers.length})`}</TabsTrigger>
             <TabsTrigger value="orders" className="shrink-0 text-xs sm:text-sm">{t("orders")}</TabsTrigger>
             <TabsTrigger value="categories" className="shrink-0 text-xs sm:text-sm">{t("categories")}</TabsTrigger>
