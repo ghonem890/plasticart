@@ -43,6 +43,7 @@ export default function ProductForm() {
             price: String(data.price), minOrderQty: String(data.min_order_qty),
             stock: String(data.stock), categoryId: data.category_id || "",
             tags: (data.tags || []).join(", "),
+            isRecyclable: data.is_recyclable ?? false,
           });
         }
       });
