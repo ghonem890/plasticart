@@ -272,6 +272,10 @@ export const translations = {
     noSubmissions: "No recycling submissions yet",
     recycle: "Recycle",
     rewards: "Rewards",
+    isRecyclable: "Is this product recyclable?",
+    tier1EcoFriendly: "Tier 1 Eco-Friendly",
+    tier2EcoFriendly: "Tier 2 Eco-Friendly",
+    tier3EcoFriendly: "Tier 3 Eco-Friendly",
   },
   ar: {
     // Nav
@@ -546,6 +550,10 @@ export const translations = {
     noSubmissions: "لا توجد طلبات تدوير بعد",
     recycle: "إعادة تدوير",
     rewards: "المكافآت",
+    isRecyclable: "هل هذا المنتج قابل لإعادة التدوير؟",
+    tier1EcoFriendly: "المستوى 1 صديق للبيئة",
+    tier2EcoFriendly: "المستوى 2 صديق للبيئة",
+    tier3EcoFriendly: "المستوى 3 صديق للبيئة",
   },
 } as const;
 

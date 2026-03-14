@@ -6,7 +6,7 @@ import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Store, Star, Package } from "lucide-react";
+import { Store, Star, Package, Leaf, RefreshCw } from "lucide-react";
 
 export default function SellerProfile() {
   const { sellerId } = useParams<{ sellerId: string }>();
@@ -49,6 +49,11 @@ export default function SellerProfile() {
   const businessName = language === "ar" && seller.business_name_ar ? seller.business_name_ar : seller.business_name;
   const description = language === "ar" && seller.description_ar ? seller.description_ar : seller.description;
 
+  // Eco badge logic
+  const recyclableCount = products.filter((p: any) => p.is_recyclable).length;
+  const recyclablePct = products.length > 0 ? (recyclableCount / products.length) * 100 : 0;
+  const ecoTier = products.length > 0 ? (recyclablePct >= 75 ? 1 : recyclablePct >= 50 ? 2 : 3) : null;
+
   return (
     <Layout>
       <div className="container py-8 space-y-8">
@@ -61,10 +66,28 @@ export default function SellerProfile() {
             <div className="flex-1 space-y-2">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-2xl font-bold">{businessName}</h1>
-                <Badge variant={seller.verification_status === "approved" ? "default" : "secondary"}>
-                  {seller.verification_status === "approved" ? t("verificationApproved") : t("verificationPending")}
-                </Badge>
-              </div>
+                 <Badge variant={seller.verification_status === "approved" ? "default" : "secondary"}>
+                   {seller.verification_status === "approved" ? t("verificationApproved") : t("verificationPending")}
+                 </Badge>
+                 {ecoTier === 1 && (
+                   <Badge className="bg-green-600 text-white border-green-600 hover:bg-green-700">
+                     <Leaf className="h-3 w-3 me-1" />
+                     {t("tier1EcoFriendly")}
+                   </Badge>
+                 )}
+                 {ecoTier === 2 && (
+                   <Badge className="bg-yellow-500 text-white border-yellow-500 hover:bg-yellow-600">
+                     <RefreshCw className="h-3 w-3 me-1" />
+                     {t("tier2EcoFriendly")}
+                   </Badge>
+                 )}
+                 {ecoTier === 3 && (
+                   <Badge className="bg-gray-400 text-white border-gray-400 hover:bg-gray-500">
+                     <RefreshCw className="h-3 w-3 me-1" />
+                     {t("tier3EcoFriendly")}
+                   </Badge>
+                 )}
+               </div>
               {description && <p className="text-muted-foreground">{description}</p>}
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 {avgRating > 0 && (

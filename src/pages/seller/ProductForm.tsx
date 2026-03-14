@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
 import { Loader2, Upload, X } from "lucide-react";
 
 export default function ProductForm() {
@@ -27,6 +28,7 @@ export default function ProductForm() {
   const [form, setForm] = useState({
     titleEn: "", titleAr: "", descriptionEn: "", descriptionAr: "",
     price: "", minOrderQty: "1", stock: "0", categoryId: "", tags: "",
+    isRecyclable: false,
   });
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export default function ProductForm() {
             price: String(data.price), minOrderQty: String(data.min_order_qty),
             stock: String(data.stock), categoryId: data.category_id || "",
             tags: (data.tags || []).join(", "),
+            isRecyclable: data.is_recyclable ?? false,
           });
         }
       });
@@ -65,6 +68,7 @@ export default function ProductForm() {
         stock: parseInt(form.stock),
         category_id: form.categoryId || null,
         tags: form.tags ? form.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
+        is_recyclable: form.isRecyclable,
       };
 
       let productId = id;
@@ -165,6 +169,10 @@ export default function ProductForm() {
                 <div className="space-y-2">
                   <Label>{t("productTags")}</Label>
                   <Input value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} placeholder="tag1, tag2, tag3" />
+                </div>
+                <div className="flex items-center justify-between rounded-lg border p-4">
+                  <Label htmlFor="recyclable-switch" className="cursor-pointer">{t("isRecyclable")}</Label>
+                  <Switch id="recyclable-switch" checked={form.isRecyclable} onCheckedChange={(v) => setForm({ ...form, isRecyclable: v })} />
                 </div>
               </CardContent>
             </Card>
