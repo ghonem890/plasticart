@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { ShoppingCart, Heart, GitCompareArrows, Star, Minus, Plus, Store, Package, MessageSquarePlus } from "lucide-react";
+import { ShoppingCart, Heart, GitCompareArrows, Star, Minus, Plus, Store, Package, MessageSquarePlus, Leaf } from "lucide-react";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
