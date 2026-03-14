@@ -272,6 +272,10 @@ export const translations = {
     noSubmissions: "No recycling submissions yet",
     recycle: "Recycle",
     rewards: "Rewards",
+    isRecyclable: "Is this product recyclable?",
+    tier1EcoFriendly: "Tier 1 Eco-Friendly",
+    tier2EcoFriendly: "Tier 2 Eco-Friendly",
+    tier3EcoFriendly: "Tier 3 Eco-Friendly",
   },
   ar: {
     // Nav
