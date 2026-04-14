@@ -359,6 +359,7 @@ export type Database = {
           min_order_qty: number
           price: number
           seller_id: string
+          slug: string | null
           specs: Json | null
           status: Database["public"]["Enums"]["product_status"]
           stock: number
@@ -377,6 +378,7 @@ export type Database = {
           min_order_qty?: number
           price: number
           seller_id: string
+          slug?: string | null
           specs?: Json | null
           status?: Database["public"]["Enums"]["product_status"]
           stock?: number
@@ -395,6 +397,7 @@ export type Database = {
           min_order_qty?: number
           price?: number
           seller_id?: string
+          slug?: string | null
           specs?: Json | null
           status?: Database["public"]["Enums"]["product_status"]
           stock?: number
