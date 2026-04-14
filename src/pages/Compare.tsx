@@ -104,7 +104,7 @@ export default function Compare() {
                 <td className="p-3 text-sm text-muted-foreground">{t("viewDetails")}</td>
                 {products.map((p) => (
                   <td key={p.id} className="p-3">
-                    <Link to={`/product/${p.id}`}>
+                    <Link to={`/product/${p.slug || p.id}`}>
                       <Button variant="outline" size="sm">
                         <Eye className="h-4 w-4 me-1" />{t("viewDetails")}
                       </Button>
