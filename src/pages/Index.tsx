@@ -125,6 +125,7 @@ export default function Index() {
                 key={p.id}
                 id={p.id}
                 slug={p.slug}
+                titleEn={p.title_en}
                 titleAr={p.title_ar}
                 price={p.price}
                 minOrderQty={p.min_order_qty}
