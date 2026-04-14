@@ -253,7 +253,7 @@ export default function ProductDetail() {
         {seller && (
           <section className="mt-12">
             <h2 className="text-xl font-semibold mb-4">{t("seller")}</h2>
-            <Link to={`/seller/${product.seller_id}`}>
+            <Link to={`/seller/${seller.slug || product.seller_id}`}>
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
                 <CardContent className="p-6 flex items-start gap-4">
                   <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">

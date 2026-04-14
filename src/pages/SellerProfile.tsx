@@ -20,13 +20,24 @@ export default function SellerProfile() {
   useEffect(() => {
     if (!sellerId) return;
     const fetchData = async () => {
-      const [sellerRes, productsRes] = await Promise.all([
-        supabase.from("seller_profiles").select("*").eq("user_id", sellerId).single(),
-        supabase.from("products").select("*, product_images(image_url, display_order), categories(name_en, name_ar)").eq("seller_id", sellerId).eq("status", "active").order("created_at", { ascending: false }),
-      ]);
+      // Detect UUID vs slug
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sellerId);
+      const sellerQuery = isUUID
+        ? supabase.from("seller_profiles").select("*").eq("user_id", sellerId).single()
+        : supabase.from("seller_profiles").select("*").eq("slug", sellerId).single();
 
+      const sellerRes = await sellerQuery;
       setSeller(sellerRes.data);
-      const prods = productsRes.data || [];
+      if (!sellerRes.data) { setLoading(false); return; }
+
+      const { data: prodsData } = await supabase
+        .from("products")
+        .select("*, product_images(image_url, display_order), categories(name_en, name_ar)")
+        .eq("seller_id", sellerRes.data.user_id)
+        .eq("status", "active")
+        .order("created_at", { ascending: false });
+
+      const prods = prodsData || [];
       setProducts(prods);
 
       // Fetch all reviews for this seller's products

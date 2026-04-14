@@ -638,6 +638,7 @@ export type Database = {
           id: string
           id_photo_url: string | null
           shipping_preference: Database["public"]["Enums"]["shipping_preference"]
+          slug: string | null
           updated_at: string
           user_id: string
           verification_notes: string | null
@@ -653,6 +654,7 @@ export type Database = {
           id?: string
           id_photo_url?: string | null
           shipping_preference?: Database["public"]["Enums"]["shipping_preference"]
+          slug?: string | null
           updated_at?: string
           user_id: string
           verification_notes?: string | null
@@ -668,6 +670,7 @@ export type Database = {
           id?: string
           id_photo_url?: string | null
           shipping_preference?: Database["public"]["Enums"]["shipping_preference"]
+          slug?: string | null
           updated_at?: string
           user_id?: string
           verification_notes?: string | null
