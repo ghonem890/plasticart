@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
   id: string;
+  slug?: string | null;
   titleEn: string;
   titleAr?: string | null;
   price: number;
@@ -25,7 +26,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({
-  id, titleEn, titleAr, price, minOrderQty, stock,
+  id, slug, titleEn, titleAr, price, minOrderQty, stock,
   imageUrl, sellerName, categoryName, isFavorited, onFavoriteToggle,
 }: ProductCardProps) {
   const { t, language } = useLanguage();
@@ -75,7 +76,7 @@ export function ProductCard({
   };
 
   return (
-    <Link to={`/product/${id}`}>
+    <Link to={`/product/${slug || id}`}>
       <Card className="group overflow-hidden hover:shadow-md transition-shadow">
         <div className="aspect-square bg-muted relative overflow-hidden">
           {imageUrl ? (

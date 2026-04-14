@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ShoppingCart, Heart, GitCompareArrows, Star, Minus, Plus, Store, Package, MessageSquarePlus, Leaf } from "lucide-react";
 
 export default function ProductDetail() {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const { t, language } = useLanguage();
   const { user } = useAuth();
   const { addItem } = useCart();
@@ -39,12 +39,16 @@ export default function ProductDetail() {
   const [hasReviewed, setHasReviewed] = useState(false);
 
   useEffect(() => {
-    if (!id) return;
+    if (!slug) return;
     const fetchData = async () => {
-      const [prodRes, imgRes, revRes] = await Promise.all([
-        supabase.from("products").select("*, categories(name_en, name_ar)").eq("id", id).single(),
-        supabase.from("product_images").select("*").eq("product_id", id).order("display_order"),
-        supabase.from("reviews").select("*, profiles:buyer_id(display_name)").eq("product_id", id).order("created_at", { ascending: false }),
+      // Determine if slug is a UUID or a readable slug
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+      const prodRes = await supabase.from("products").select("*, categories(name_en, name_ar)").eq(isUuid ? "id" : "slug", slug).single();
+      const productId = prodRes.data?.id;
+      if (!productId) { setLoading(false); return; }
+      const [imgRes, revRes] = await Promise.all([
+        supabase.from("product_images").select("*").eq("product_id", productId).order("display_order"),
+        supabase.from("reviews").select("*, profiles:buyer_id(display_name)").eq("product_id", productId).order("created_at", { ascending: false }),
       ]);
       if (prodRes.data) {
         setProduct(prodRes.data);
@@ -65,13 +69,13 @@ export default function ProductDetail() {
       setImages(imgRes.data || []);
       setReviews(revRes.data || []);
       if (user) {
-        const favRes = await supabase.from("favorites").select("id").eq("user_id", user.id).eq("product_id", id);
+        const favRes = await supabase.from("favorites").select("id").eq("user_id", user.id).eq("product_id", productId);
         setIsFavorited((favRes.data || []).length > 0);
         // Check if user purchased this product
         const { data: orderItems } = await supabase
           .from("order_items")
           .select("id, order_id, orders!inner(buyer_id, status)")
-          .eq("product_id", id)
+          .eq("product_id", productId)
           .eq("orders.buyer_id", user.id);
         const completed = (orderItems || []).some((oi: any) => 
           ["confirmed", "shipped", "completed"].includes(oi.orders?.status)
@@ -83,13 +87,13 @@ export default function ProductDetail() {
       setLoading(false);
     };
     fetchData();
-  }, [id, user]);
+  }, [slug, user]);
 
   const handleSubmitReview = async () => {
-    if (!user || !id) return;
+    if (!user || !product?.id) return;
     setSubmittingReview(true);
     const { data, error } = await supabase.from("reviews").insert({
-      product_id: id,
+      product_id: product.id,
       buyer_id: user.id,
       rating: reviewRating,
       comment: reviewComment || null,
@@ -131,10 +135,10 @@ export default function ProductDetail() {
   const handleFavorite = async () => {
     if (!user) return;
     if (isFavorited) {
-      await supabase.from("favorites").delete().eq("user_id", user.id).eq("product_id", id!);
+      await supabase.from("favorites").delete().eq("user_id", user.id).eq("product_id", product?.id!);
       setIsFavorited(false);
     } else {
-      await supabase.from("favorites").insert({ user_id: user.id, product_id: id! });
+      await supabase.from("favorites").insert({ user_id: user.id, product_id: product?.id! });
       setIsFavorited(true);
     }
   };

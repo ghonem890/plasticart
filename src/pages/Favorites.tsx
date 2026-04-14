@@ -47,7 +47,7 @@ export default function Favorites() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {products.map((p) => (
               <ProductCard
-                key={p.id} id={p.id} titleEn={p.title_en} titleAr={p.title_ar}
+                key={p.id} id={p.id} slug={p.slug} titleEn={p.title_en} titleAr={p.title_ar}
                 price={p.price} minOrderQty={p.min_order_qty} stock={p.stock}
                 imageUrl={getImage(p)} isFavorited onFavoriteToggle={fetchFavorites}
               />

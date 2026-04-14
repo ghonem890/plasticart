@@ -246,6 +246,7 @@ export default function Catalog() {
                 <ProductCard
                   key={p.id}
                   id={p.id}
+                  slug={p.slug}
                   titleEn={p.title_en}
                   titleAr={p.title_ar}
                   price={p.price}
