@@ -12,15 +12,24 @@ import {
   Package, LogIn, UserPlus, LogOut, ShoppingCart,
   Heart, LayoutDashboard, Menu, X, User, ShoppingBag, Store, Plus, Recycle, Gift
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Footer } from "@/components/Footer";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { user, signOut, hasRole } = useAuth();
   const { t } = useLanguage();
   const { itemCount } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sellerSlug, setSellerSlug] = useState<string | null>(null);
   const location = useLocation();
+
+  useEffect(() => {
+    if (!user || !hasRole("seller")) return;
+    supabase.from("seller_profiles").select("slug").eq("user_id", user.id).single().then(({ data }) => {
+      if (data?.slug) setSellerSlug(data.slug);
+    });
+  }, [user]);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -61,8 +70,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             )}
             {user && hasRole("seller") && (
               <>
-                <Link to={`/seller/${user.id}`}>
-                  <Button variant={location.pathname.startsWith("/seller/" + user.id) ? "secondary" : "ghost"} size="sm">{t("profile")}</Button>
+                <Link to={`/seller/${sellerSlug || user.id}`}>
+                  <Button variant={location.pathname.startsWith("/seller/" + (sellerSlug || user.id)) ? "secondary" : "ghost"} size="sm">{t("profile")}</Button>
                 </Link>
                 <Link to="/seller/products/new">
                   <Button variant={isActive("/seller/products/new") ? "secondary" : "ghost"} size="sm">{t("addNew")}</Button>
@@ -175,7 +184,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             )}
             {user && hasRole("seller") && (
               <>
-                <Link to={`/seller/${user.id}`} onClick={() => setMenuOpen(false)}>
+                <Link to={`/seller/${sellerSlug || user.id}`} onClick={() => setMenuOpen(false)}>
                   <Button variant="ghost" className="w-full justify-start gap-2"><User className="h-4 w-4" />{t("profile")}</Button>
                 </Link>
                 <Link to="/seller/products/new" onClick={() => setMenuOpen(false)}>
