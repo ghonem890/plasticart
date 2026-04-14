@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { ShoppingCart, Heart, GitCompareArrows, Star, Minus, Plus, Store, Package, MessageSquarePlus, Leaf } from "lucide-react";
+import { ShoppingCart, Heart, GitCompareArrows, Star, Minus, Plus, Store, Package, MessageSquarePlus, Leaf, RefreshCw } from "lucide-react";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -30,6 +30,7 @@ export default function ProductDetail() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [sellerAvgRating, setSellerAvgRating] = useState(0);
   const [sellerReviewCount, setSellerReviewCount] = useState(0);
+  const [sellerEcoTier, setSellerEcoTier] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasPurchased, setHasPurchased] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -52,7 +53,7 @@ export default function ProductDetail() {
         const sellerRes = await supabase.from("seller_profiles").select("*").eq("user_id", prodRes.data.seller_id).single();
         setSeller(sellerRes.data);
         // Fetch all seller's products to calculate seller-wide review stats
-        const { data: sellerProducts } = await supabase.from("products").select("id").eq("seller_id", prodRes.data.seller_id).eq("status", "active");
+        const { data: sellerProducts } = await supabase.from("products").select("id, is_recyclable").eq("seller_id", prodRes.data.seller_id).eq("status", "active");
         if (sellerProducts && sellerProducts.length > 0) {
           const sellerProductIds = sellerProducts.map((p: any) => p.id);
           const { data: sellerReviews } = await supabase.from("reviews").select("rating").in("product_id", sellerProductIds);
@@ -60,6 +61,10 @@ export default function ProductDetail() {
             setSellerAvgRating(sellerReviews.reduce((s: number, r: any) => s + r.rating, 0) / sellerReviews.length);
             setSellerReviewCount(sellerReviews.length);
           }
+          // Compute eco tier
+          const recyclableCount = sellerProducts.filter((p: any) => p.is_recyclable).length;
+          const recyclablePct = (recyclableCount / sellerProducts.length) * 100;
+          setSellerEcoTier(recyclablePct >= 75 ? 1 : recyclablePct >= 50 ? 2 : 3);
         }
       }
       setImages(imgRes.data || []);
@@ -263,6 +268,24 @@ export default function ProductDetail() {
                       <Badge variant={seller.verification_status === "approved" ? "default" : "secondary"} className="text-xs">
                         {seller.verification_status === "approved" ? t("verificationApproved") : t("verificationPending")}
                       </Badge>
+                      {sellerEcoTier === 1 && (
+                        <Badge className="bg-green-600 text-white border-green-600 hover:bg-green-700 text-xs">
+                          <Leaf className="h-3 w-3 me-1" />
+                          {language === "ar" ? "صديق للبيئة" : "Eco-Friendly"}
+                        </Badge>
+                      )}
+                      {sellerEcoTier === 2 && (
+                        <Badge className="bg-yellow-500 text-white border-yellow-500 hover:bg-yellow-600 text-xs">
+                          <RefreshCw className="h-3 w-3 me-1" />
+                          {language === "ar" ? "مُعيد تدوير" : "Recycler"}
+                        </Badge>
+                      )}
+                      {sellerEcoTier === 3 && (
+                        <Badge variant="outline" className="text-xs">
+                          <Leaf className="h-3 w-3 me-1" />
+                          {language === "ar" ? "مبتدئ أخضر" : "Green Starter"}
+                        </Badge>
+                      )}
                     </div>
                     {(language === "ar" ? seller.description_ar : seller.description) && (
                       <p className="text-sm text-muted-foreground line-clamp-2">{language === "ar" ? seller.description_ar : seller.description}</p>
