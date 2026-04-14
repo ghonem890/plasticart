@@ -8,8 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Package, ShoppingCart, DollarSign, Plus, AlertCircle, Eye } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Package, ShoppingCart, DollarSign, Plus, AlertCircle, Eye, MoreVertical, Power, Trash2 } from "lucide-react";
 import { OrderDetailDialog } from "@/components/OrderDetailDialog";
+import { toast } from "@/hooks/use-toast";
 
 export default function SellerDashboard() {
   const { t } = useLanguage();
