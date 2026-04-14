@@ -1,24 +1,63 @@
 
 
-## Fix: Product Slug Backfill
+## Add "Intended Products" Field to Seller Onboarding
 
-### Problem
-The slug migration created the trigger correctly but the backfill failed. The trigger fires on `INSERT OR UPDATE OF title_en`, but the migration only updated the `slug` column — so the trigger never fired. All products currently have `slug: null`.
+### Overview
+Add a new step in the seller onboarding flow where sellers list the products they intend to sell, each with a name and an image. Store this data in a new database table. Display these intended products in the admin seller review dialog.
 
 ### Plan
 
-**1. Database migration to backfill slugs**
-Run a new migration that triggers the slug generation by touching `title_en`:
+**1. Database migration -- new `seller_intended_products` table**
+
 ```sql
-UPDATE public.products SET title_en = title_en;
+CREATE TABLE public.seller_intended_products (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  seller_profile_id uuid NOT NULL,
+  product_name text NOT NULL,
+  image_url text,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.seller_intended_products ENABLE ROW LEVEL SECURITY;
+
+-- Sellers can insert during onboarding
+CREATE POLICY "Sellers insert intended products" ON public.seller_intended_products
+  FOR INSERT TO authenticated
+  WITH CHECK (EXISTS (
+    SELECT 1 FROM seller_profiles WHERE id = seller_profile_id AND user_id = auth.uid()
+  ));
+
+-- Public read (admins and seller profile viewers)
+CREATE POLICY "Intended products viewable" ON public.seller_intended_products
+  FOR SELECT TO public USING (true);
+
+-- Admins can manage
+CREATE POLICY "Admins manage intended products" ON public.seller_intended_products
+  FOR ALL TO authenticated USING (has_role(auth.uid(), 'admin'));
 ```
-This updates `title_en` to its own value, which fires the `set_product_slug` trigger and populates the `slug` column for all existing products.
 
-**2. No code changes needed**
-The frontend code (ProductCard, ProductDetail, Catalog, etc.) already handles slugs correctly with UUID fallback. Once slugs are populated, product links will automatically use readable URLs like `/product/disposable-plastic-cups-200ml`.
+Images will be uploaded to the existing `seller-documents` bucket under `{user_id}/intended-products/`.
 
-### Technical Details
-- The existing `generate_product_slug()` function handles uniqueness by appending `-1`, `-2`, etc. for duplicate titles
-- The `ProductDetail` page already detects UUID vs slug format and queries accordingly
-- All components already pass `slug` prop through to `ProductCard`
+**2. Update onboarding form (`src/pages/seller/Onboarding.tsx`)**
+
+- Change progress bar from 3 steps to 4 steps.
+- Insert a new **Step 2: "Products You Want to Sell"** between business info and contract upload (shifting contract to step 3, ID photo to step 4).
+- Step 2 UI: a dynamic list where each entry has a product name input and an image upload button. Sellers can add/remove entries. Show image thumbnails after selection.
+- On final submit (`handleComplete`): after inserting `seller_profiles`, upload each intended product image to storage, then batch-insert rows into `seller_intended_products`.
+
+**3. Update admin review dialog (`src/components/admin/SellerDetailDialog.tsx`)**
+
+- On dialog open, fetch `seller_intended_products` where `seller_profile_id = seller.id`.
+- Generate signed URLs for each product image.
+- Display a new "Intended Products" section after the documents section, showing a grid of cards with product name and image thumbnail.
+
+**4. Add translations (`src/i18n/translations.ts`)**
+
+Add EN/AR keys: `intendedProducts`, `addProduct`, `removeProduct`, `productName`, `productImage`, `noIntendedProducts`.
+
+### Files Changed
+- `supabase/migrations/` -- new migration file
+- `src/pages/seller/Onboarding.tsx` -- add step 2 with product list
+- `src/components/admin/SellerDetailDialog.tsx` -- fetch and display intended products
+- `src/i18n/translations.ts` -- new translation keys
 
