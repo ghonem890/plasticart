@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle, XCircle, FileText, Image, ExternalLink, Loader2, Building2, Truck, Calendar } from "lucide-react";
+import { CheckCircle, XCircle, FileText, Image, ExternalLink, Loader2, Building2, Truck, Calendar, Package } from "lucide-react";
 
 interface SellerDetailDialogProps {
   seller: any;
@@ -14,16 +14,26 @@ interface SellerDetailDialogProps {
   onStatusUpdate: (sellerId: string, status: "approved" | "rejected") => void;
 }
 
+interface IntendedProduct {
+  id: string;
+  product_name: string;
+  image_url: string | null;
+  signedUrl?: string | null;
+}
+
 export function SellerDetailDialog({ seller, open, onOpenChange, onStatusUpdate }: SellerDetailDialogProps) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const [contractUrl, setContractUrl] = useState<string | null>(null);
   const [idPhotoUrl, setIdPhotoUrl] = useState<string | null>(null);
   const [loadingDocs, setLoadingDocs] = useState(false);
+  const [intendedProducts, setIntendedProducts] = useState<IntendedProduct[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
 
   useEffect(() => {
     if (!open || !seller) return;
     setContractUrl(null);
     setIdPhotoUrl(null);
+    setIntendedProducts([]);
 
     const loadSignedUrls = async () => {
       setLoadingDocs(true);
@@ -50,7 +60,33 @@ export function SellerDetailDialog({ seller, open, onOpenChange, onStatusUpdate 
       setLoadingDocs(false);
     };
 
+    const loadIntendedProducts = async () => {
+      setLoadingProducts(true);
+      const { data } = await supabase
+        .from("seller_intended_products")
+        .select("id, product_name, image_url")
+        .eq("seller_profile_id", seller.id);
+
+      if (data && data.length > 0) {
+        const withUrls = await Promise.all(
+          data.map(async (p) => {
+            let signedUrl: string | null = null;
+            if (p.image_url) {
+              const { data: urlData } = await supabase.storage
+                .from("seller-documents")
+                .createSignedUrl(p.image_url, 3600);
+              signedUrl = urlData?.signedUrl ?? null;
+            }
+            return { ...p, signedUrl };
+          })
+        );
+        setIntendedProducts(withUrls);
+      }
+      setLoadingProducts(false);
+    };
+
     loadSignedUrls();
+    loadIntendedProducts();
   }, [open, seller]);
 
   if (!seller) return null;
@@ -139,6 +175,46 @@ export function SellerDetailDialog({ seller, open, onOpenChange, onStatusUpdate 
               </div>
             </>
           )}
+
+          <Separator />
+
+          {/* Intended Products */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1">
+              <Package className="h-4 w-4" /> {t("intendedProducts")}
+            </h3>
+
+            {loadingProducts && (
+              <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+              </div>
+            )}
+
+            {!loadingProducts && intendedProducts.length === 0 && (
+              <p className="text-sm text-muted-foreground">{t("noIntendedProducts")}</p>
+            )}
+
+            {intendedProducts.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {intendedProducts.map((product) => (
+                  <div key={product.id} className="border rounded-lg overflow-hidden">
+                    {product.signedUrl ? (
+                      <img
+                        src={product.signedUrl}
+                        alt={product.product_name}
+                        className="w-full h-24 object-contain bg-muted"
+                      />
+                    ) : (
+                      <div className="w-full h-24 bg-muted flex items-center justify-center">
+                        <Package className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                    )}
+                    <p className="text-xs font-medium p-2 truncate">{product.product_name}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           <Separator />
 
