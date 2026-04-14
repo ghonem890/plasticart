@@ -28,7 +28,6 @@ export default function SellerOnboarding() {
   const [form, setForm] = useState({
     businessName: "", businessNameAr: "",
     description: "", descriptionAr: "",
-    shippingPreference: "self_managed" as "self_managed" | "platform_provided",
   });
   const [intendedProducts, setIntendedProducts] = useState<IntendedProduct[]>([
     { name: "", imageFile: null, imagePreview: null },
@@ -85,7 +84,7 @@ export default function SellerOnboarding() {
         description_ar: form.descriptionAr || null,
         contract_document_url: contractUrl || null,
         id_photo_url: idPhotoUrl || null,
-        shipping_preference: form.shippingPreference,
+        shipping_preference: "self_managed",
         verification_status: "pending",
       }).select("id").single();
 
@@ -158,17 +157,7 @@ export default function SellerOnboarding() {
                 <Label>{t("businessDescriptionAr")}</Label>
                 <Textarea value={form.descriptionAr} onChange={(e) => setForm({ ...form, descriptionAr: e.target.value })} dir="rtl" />
               </div>
-              <div className="space-y-2">
-                <Label>{t("shippingPreference")}</Label>
-                <div className="flex gap-2">
-                  <Button type="button" variant={form.shippingPreference === "self_managed" ? "default" : "outline"} className="flex-1" onClick={() => setForm({ ...form, shippingPreference: "self_managed" })}>
-                    {t("selfManaged")}
-                  </Button>
-                  <Button type="button" variant={form.shippingPreference === "platform_provided" ? "default" : "outline"} className="flex-1" onClick={() => setForm({ ...form, shippingPreference: "platform_provided" })}>
-                    {t("platformProvided")}
-                  </Button>
-                </div>
-              </div>
+              
               <Button className="w-full" onClick={() => setStep(2)} disabled={!form.businessName}>{t("next")}</Button>
             </CardContent>
           </Card>
