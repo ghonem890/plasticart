@@ -33,7 +33,16 @@ export default function ProductForm() {
 
   useEffect(() => {
     supabase.from("categories").select("*").order("sort_order").then(({ data }) => setCategories(data || []));
-    
+
+    // Block rejected sellers from adding new products
+    if (!isEdit && user) {
+      supabase.from("seller_profiles").select("verification_status").eq("user_id", user.id).single().then(({ data }) => {
+        if (data?.verification_status === "rejected") {
+          toast({ title: t("verificationRejected"), description: t("sellerRejectedNotice"), variant: "destructive" });
+          navigate("/seller");
+        }
+      });
+    }
     if (isEdit) {
       supabase.from("products").select("*").eq("id", id).single().then(({ data }) => {
         if (data) {
