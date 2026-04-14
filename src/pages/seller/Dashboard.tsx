@@ -8,8 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Package, ShoppingCart, DollarSign, Plus, AlertCircle, Eye } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Package, ShoppingCart, DollarSign, Plus, AlertCircle, Eye, MoreVertical, Power, Trash2 } from "lucide-react";
 import { OrderDetailDialog } from "@/components/OrderDetailDialog";
+import { toast } from "@/hooks/use-toast";
 
 export default function SellerDashboard() {
   const { t } = useLanguage();
@@ -59,6 +62,21 @@ export default function SellerDashboard() {
   const updateOrderStatus = async (orderId: string, status: "pending" | "confirmed" | "shipped" | "completed" | "returned" | "refunded" | "cancelled") => {
     await supabase.from("orders").update({ status }).eq("id", orderId);
     setOrders((prev) => prev.map((o) => o.id === orderId ? { ...o, status } : o));
+  };
+
+  const toggleProductStatus = async (productId: string, currentStatus: string) => {
+    const newStatus = currentStatus === "active" ? "disabled" : "active";
+    const { error } = await supabase.from("products").update({ status: newStatus }).eq("id", productId);
+    if (error) return;
+    setProducts((prev) => prev.map((p) => p.id === productId ? { ...p, status: newStatus } : p));
+    toast({ title: newStatus === "active" ? t("productActivated") : t("productDeactivated") });
+  };
+
+  const deleteProduct = async (productId: string) => {
+    const { error } = await supabase.from("products").delete().eq("id", productId);
+    if (error) return;
+    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    toast({ title: t("productDeleted") });
   };
 
   const statusLabel = (s: string) => {
@@ -116,7 +134,7 @@ export default function SellerDashboard() {
         <h2 className="text-lg font-semibold mb-4">{t("products")}</h2>
         <div className="space-y-3 mb-8">
           {products.map((p) => (
-            <Card key={p.id}>
+            <Card key={p.id} className={p.status === "disabled" ? "opacity-60" : ""}>
               <CardContent className="p-4 flex items-center gap-4">
                 <div className="h-12 w-12 rounded-lg bg-muted shrink-0 overflow-hidden">
                   {p.product_images?.[0] && <img src={p.product_images[0].image_url} alt="" className="w-full h-full object-cover" />}
@@ -129,6 +147,39 @@ export default function SellerDashboard() {
                 <Link to={`/seller/products/${p.id}/edit`}>
                   <Button variant="outline" size="sm">{t("edit")}</Button>
                 </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => toggleProductStatus(p.id, p.status)}>
+                      <Power className="h-4 w-4 me-2" />
+                      {p.status === "active" ? t("deactivateProduct") : t("activateProduct")}
+                    </DropdownMenuItem>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive">
+                          <Trash2 className="h-4 w-4 me-2" />
+                          {t("deleteProduct")}
+                        </DropdownMenuItem>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>{t("deleteProduct")}</AlertDialogTitle>
+                          <AlertDialogDescription>{t("confirmDelete")}</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => deleteProduct(p.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            {t("delete")}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </CardContent>
             </Card>
           ))}
