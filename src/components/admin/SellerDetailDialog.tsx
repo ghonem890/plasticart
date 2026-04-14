@@ -178,7 +178,7 @@ export function SellerDetailDialog({ seller, open, onOpenChange, onStatusUpdate 
           {/* Intended Products */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-1">
-              <Package className="h-4 w-4" /> {t("sampleProducts")}
+              <Package className="h-4 w-4" /> {t("intendedProducts")}
             </h3>
 
             {loadingProducts && (
