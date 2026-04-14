@@ -28,7 +28,6 @@ export default function SellerOnboarding() {
   const [form, setForm] = useState({
     businessName: "", businessNameAr: "",
     description: "", descriptionAr: "",
-    shippingPreference: "self_managed" as "self_managed" | "platform_provided",
   });
   const [intendedProducts, setIntendedProducts] = useState<IntendedProduct[]>([
     { name: "", imageFile: null, imagePreview: null },
