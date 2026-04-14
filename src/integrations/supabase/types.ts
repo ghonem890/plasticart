@@ -595,6 +595,38 @@ export type Database = {
           },
         ]
       }
+      seller_intended_products: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          product_name: string
+          seller_profile_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          product_name: string
+          seller_profile_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          product_name?: string
+          seller_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_intended_products_seller_profile_id_fkey"
+            columns: ["seller_profile_id"]
+            isOneToOne: false
+            referencedRelation: "seller_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seller_profiles: {
         Row: {
           business_name: string
