@@ -90,12 +90,14 @@ export default function SellerDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <h1 className="text-2xl font-bold">{t("sellerDashboard")}</h1>
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge variant={sellerProfile?.verification_status === "approved" ? "default" : "secondary"}>
+            <Badge variant={sellerProfile?.verification_status === "approved" ? "default" : sellerProfile?.verification_status === "rejected" ? "destructive" : "secondary"}>
               {sellerProfile?.verification_status === "approved" ? t("verificationApproved") : sellerProfile?.verification_status === "rejected" ? t("verificationRejected") : t("verificationPending")}
             </Badge>
-            <Link to="/seller/products/new">
-              <Button size="sm"><Plus className="h-4 w-4 me-1" />{t("addProduct")}</Button>
-            </Link>
+            {sellerProfile?.verification_status !== "rejected" && (
+              <Link to="/seller/products/new">
+                <Button size="sm"><Plus className="h-4 w-4 me-1" />{t("addProduct")}</Button>
+              </Link>
+            )}
           </div>
         </div>
 
@@ -104,6 +106,23 @@ export default function SellerDashboard() {
             <CardContent className="p-4 flex items-center gap-3">
               <AlertCircle className="h-5 w-5 text-yellow-600 shrink-0" />
               <p className="text-sm text-yellow-800">{t("verificationPending")} — Your account is being reviewed.</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {sellerProfile?.verification_status === "rejected" && (
+          <Card className="mb-6 border-destructive/50 bg-destructive/5">
+            <CardContent className="p-4 flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-destructive shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-destructive">{t("sellerRejectedNotice")}</p>
+                {sellerProfile.verification_notes && (
+                  <p className="text-xs text-muted-foreground mt-1">{t("reason")}: {sellerProfile.verification_notes}</p>
+                )}
+              </div>
+              <Link to="/seller/onboarding">
+                <Button size="sm" variant="outline">{t("reapply")}</Button>
+              </Link>
             </CardContent>
           </Card>
         )}
