@@ -145,10 +145,7 @@ export function SellerDetailDialog({ seller, open, onOpenChange, onStatusUpdate 
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Phone</p>
               <p className="font-medium">{seller.profiles?.phone || "—"}</p>
             </div>
-            <div className="space-y-1">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1"><Truck className="h-3 w-3" /> Shipping</p>
-              <p className="font-medium">{seller.shipping_preference === "self_managed" ? t("selfManaged") : t("platformProvided")}</p>
-            </div>
+            
             <div className="space-y-1">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1"><Calendar className="h-3 w-3" /> Applied</p>
               <p className="font-medium">{new Date(seller.created_at).toLocaleDateString()}</p>
