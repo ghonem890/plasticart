@@ -64,6 +64,21 @@ export default function SellerDashboard() {
     setOrders((prev) => prev.map((o) => o.id === orderId ? { ...o, status } : o));
   };
 
+  const toggleProductStatus = async (productId: string, currentStatus: string) => {
+    const newStatus = currentStatus === "active" ? "disabled" : "active";
+    const { error } = await supabase.from("products").update({ status: newStatus }).eq("id", productId);
+    if (error) return;
+    setProducts((prev) => prev.map((p) => p.id === productId ? { ...p, status: newStatus } : p));
+    toast({ title: newStatus === "active" ? t("productActivated") : t("productDeactivated") });
+  };
+
+  const deleteProduct = async (productId: string) => {
+    const { error } = await supabase.from("products").delete().eq("id", productId);
+    if (error) return;
+    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    toast({ title: t("productDeleted") });
+  };
+
   const statusLabel = (s: string) => {
     const map: Record<string, string> = { pending: t("pending"), confirmed: t("confirmed"), shipped: t("shipped"), completed: t("completed"), cancelled: t("cancelled") };
     return map[s] || s;
